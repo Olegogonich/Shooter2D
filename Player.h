@@ -5,19 +5,18 @@
 
 struct Player : GameObject {
 
-    const float jump_force = 5.f;
-    const float walking_speed = 2.f;
-    const float acceleration = 0.1f;
+    const float jump_force = 10.f;
+    const float walking_speed = 5.f;
+    const float friction = 0.8f;
+    const float air_speed = 0.5f;
 
-    Player(b2World *world, const b2BodyType &type, const sf::Vector2f& pos, const sf::Vector2f& size);
+    Player(b2World*, const b2BodyType&, const sf::Vector2f& , const sf::Vector2f&, Animator*);
 
     void update() const override;
 
     void jump(float height) const;
 
     void walk(float speed) const;
-
-    void accelerate(float acceleration);
 
     void stop(float friction) const;
 

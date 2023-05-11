@@ -2,13 +2,15 @@
 #include <SFML/Graphics.hpp>
 #include <box2d.h>
 #include <iostream>
+#include "Animator.h"
 
 struct GameObject {
 
+    Animator* animator;
     sf::RectangleShape* shape;
     b2Body* body;
 
-    GameObject(b2World* world, const b2BodyType& type, sf::Vector2f pos, sf::Vector2f size);
+    GameObject(b2World*, const b2BodyType&, sf::Vector2f, sf::Vector2f, Animator*);
 
     virtual void update() const;
 

@@ -1,8 +1,8 @@
 #include "Player.h"
+#include <iostream>
 
-
-Player::Player(b2World *world, const b2BodyType &type, const sf::Vector2f& pos, const sf::Vector2f& size) :
-    GameObject(world, type, pos, size) { }
+Player::Player(b2World *world, const b2BodyType &type, const sf::Vector2f& pos, const sf::Vector2f& size, Animator* _animator) :
+    GameObject(world, type, pos, size, _animator) { }
 
 void Player::update() const {
     updateShapePosition();
@@ -13,13 +13,13 @@ void Player::update() const {
 void Player::jump(float height) const {
     if (body->GetLinearVelocity().y != 0.f)
         return;
-
-    body->ApplyLinearImpulseToCenter({0.f, height * 5000.f}, true);
+    b2Vec2 vel = body->GetLinearVelocity();
+    body->ApplyLinearImpulseToCenter({vel.x, height * 5000.f}, true);
 }
 
 void Player::walk(float speed) const {
     b2Vec2 vel = body->GetLinearVelocity();
-    body->SetLinearVelocity({speed * 100, vel.y});
+    body->ApplyLinearImpulseToCenter({speed * 100, vel.y}, true);
 }
 
 void Player::stop(float friction) const {
@@ -27,29 +27,25 @@ void Player::stop(float friction) const {
         return;
 
     b2Vec2 vel = body->GetLinearVelocity();
-    body->SetLinearVelocity({vel.x * friction, vel.y * friction});
+    body->SetLinearVelocity({vel.x * friction, vel.y});
 }
 
 void Player::control() const {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)
+     || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
+     || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
         jump(-jump_force);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        jump(-jump_force);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
-        jump(-jump_force);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    if (body->GetContactList() == nullptr)
+        return;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)
+     || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
         walk(-walking_speed);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)
+     || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
         walk(walking_speed);
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        walk(-walking_speed);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        walk(walking_speed);
-    }
+//        stop(friction);
 }

@@ -11,9 +11,9 @@ struct Level {
 
     explicit Level(const b2Vec2& gravity);
 
-    GameObject* createObject(const b2BodyType& type, sf::Vector2f pos, sf::Vector2f size) const;
+    GameObject* createObject(const b2BodyType&, sf::Vector2f, sf::Vector2f, Animator*) const;
 
-    Player* createPlayer(const b2BodyType& type, sf::Vector2f pos, sf::Vector2f size) const;
+    Player* createPlayer(const b2BodyType&, sf::Vector2f, sf::Vector2f, Animator*) const;
 
     ~Level();
 };
