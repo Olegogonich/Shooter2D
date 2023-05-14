@@ -3,7 +3,8 @@
 const float timeStep = 0.001f;
 
 const float n = 0.05;
-const float h = 0.3;
+const float h = 0.45;
+const float r = 0.1;
 const float offset_y = 200;
 
 void render(sf::RenderWindow* window, Level* level) {
@@ -40,5 +41,5 @@ void movePlayerCamera(sf::View &view, Player *player, sf::Window *window) {
     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
     float x = ((mousePos.x - window->getSize().x * 0.5f) * h + pos.x * zoom - view.getCenter().x);
     float y = ((mousePos.y - window->getSize().y * 0.5f) * h + pos.y * zoom - offset_y - view.getCenter().y);
-    view.move(x * n, y * n);
+    view.move(pow(x * n * r, 3), y * n);
 }
