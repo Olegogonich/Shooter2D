@@ -1,28 +1,27 @@
 #include "Player.h"
 #include <iostream>
 
-Player::Player(b2World *world, const b2BodyType &type, const sf::Vector2f& pos, const sf::Vector2f& size, Animator* _animator) :
-    GameObject(world, type, pos, size, _animator) { }
+Player::Player(
+        b2World *world,
+        const sf::Vector2f &pos,
+        const sf::Vector2f &size,
+        Animator *_animator,
+        Controls *_controls
+        )
+        : GameObject(world, b2_dynamicBody, pos, size, _animator) {
 
-void Player::update() const {
+    body->SetFixedRotation(true);
+    controls = _controls;
+}
+
+void Player::update() {
     updateShapePosition();
     updateShapeRotation();
+    animator->update({body->GetPosition().x, body->GetPosition().y}, body->GetAngle());
     control();
 }
 
-void Player::jump(float height) const {
-    if (body->GetLinearVelocity().y != 0.f)
-        return;
-    b2Vec2 vel = body->GetLinearVelocity();
-    body->ApplyLinearImpulseToCenter({vel.x, height * 5000.f}, true);
-}
-
-void Player::walk(float speed) const {
-    b2Vec2 vel = body->GetLinearVelocity();
-    body->ApplyLinearImpulseToCenter({speed * 100, vel.y}, true);
-}
-
-void Player::stop(float friction) const {
+void Player::stop() {
     if (body->GetContactList() == nullptr)
         return;
 
@@ -30,22 +29,48 @@ void Player::stop(float friction) const {
     body->SetLinearVelocity({vel.x * friction, vel.y});
 }
 
-void Player::control() const {
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)
-     || sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
-     || sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-        jump(-jump_force);
-    }
-    if (body->GetContactList() == nullptr)
-        return;
+bool Player::isOnFloor() const {
+    return abs(body->GetLinearVelocity().y) < 0.00001f;
+}
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)
-     || sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-        walk(-walking_speed);
+void Player::shoot() {
+
+}
+
+void Player::jump()  {
+    if (controls->jumpPressed() && isOnFloor()) {
+        float impulse = body->GetMass() * -jump_force;
+        body->ApplyLinearImpulse({0.f, impulse}, body->GetWorldCenter(), true);
+        // animator->currentAnimation = "jumping";
     }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)
-     || sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-        walk(walking_speed);
+}
+
+void Player::move() {
+    bool right = controls->rightPressed();
+    bool left = controls->leftPressed();
+
+    if (!right && !left) {
+        stop();
+        return;
     }
-//        stop(friction);
+
+    if (right) {
+        b2Vec2 vel = body->GetLinearVelocity();
+        vel.x = vel.x <= top_speed ? vel.x + acceleration : top_speed;
+        body->SetLinearVelocity(vel);
+    }
+
+    if (left) {
+        b2Vec2 vel = body->GetLinearVelocity();
+        vel.x = vel.x >= -top_speed ? vel.x - acceleration : -top_speed;
+        body->SetLinearVelocity(vel);
+    }
+
+    animator->currentAnimation = "running";
+}
+
+void Player::control() {
+    animator->currentAnimation = "idle";
+    jump();
+    move();
 }

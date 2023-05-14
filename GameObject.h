@@ -3,6 +3,7 @@
 #include <box2d.h>
 #include <iostream>
 #include "Animator.h"
+#include "Constants.h"
 
 struct GameObject {
 
@@ -12,7 +13,7 @@ struct GameObject {
 
     GameObject(b2World*, const b2BodyType&, sf::Vector2f, sf::Vector2f, Animator*);
 
-    virtual void update() const;
+    virtual void update();
 
     void updateShapePosition() const;
 

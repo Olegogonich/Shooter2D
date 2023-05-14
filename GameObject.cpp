@@ -1,9 +1,5 @@
 #include "GameObject.h"
 
-#define zoom 10
-#define DEGTORAD 0.0174532925199432957f
-#define RADTODEG 57.295779513082320876f
-
 GameObject::GameObject(b2World *world, const b2BodyType& type, sf::Vector2f pos, sf::Vector2f size, Animator* _animator) {
     b2BodyDef bodyDef;
     bodyDef.type = type;
@@ -21,19 +17,22 @@ GameObject::GameObject(b2World *world, const b2BodyType& type, sf::Vector2f pos,
     body = world->CreateBody(&bodyDef);
     body->CreateFixture(&boxFixtureDef);
 
-    animator = _animator;
-    animator->sprite->setTexture(*animator->getCurrentTexture());
-    animator->sprite->setScale(0.2f, 0.2f);
-    animator->sprite->setPosition(pos.x * zoom, pos.y * zoom);
-
     shape = new sf::RectangleShape();
     shape->setFillColor(sf::Color::Black);
     shape->setSize({size.x * 2.f * zoom, size.y * 2.f * zoom});
     shape->setOrigin(shape->getSize().x * 0.5f, shape->getSize().y * 0.5f);
     shape->setPosition(shape->getPosition().x * zoom, shape->getPosition().y * zoom);
+
+    animator = _animator;
+    sf::Vector2u textureSize = animator->getCurrentTexture()->getSize();
+    sf::Vector2f scaling = {size.x * 2.f * zoom / (float)textureSize.x, size.y * 2.f * zoom / (float)textureSize.y};
+    animator->sprite->setTexture(*animator->getCurrentTexture());
+    animator->sprite->setScale(scaling);
+    animator->sprite->setOrigin((float)textureSize.x * 0.5f, (float)textureSize.y * 0.5f);
+    animator->sprite->setPosition(pos.x * zoom, pos.y * zoom);
 }
 
-void GameObject::update() const {
+void GameObject::update() {
     updateShapePosition();
     updateShapeRotation();
     animator->update({body->GetPosition().x, body->GetPosition().y}, body->GetAngle());

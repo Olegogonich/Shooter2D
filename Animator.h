@@ -4,16 +4,24 @@
 #include <vector>
 #include "Animation.h"
 
-#define zoom 10
-#define RADTODEG 57.295779513082320876f
-
 struct Animator {
 
     std::map<std::string, Animation*>* animations;
     sf::Sprite* sprite;
-    std::string currentAnimationName;
+    std::string currentAnimation;
+
+    struct AnimatorException : public std::exception {
+
+        const std::string m_msg;
+
+        explicit AnimatorException(std::string msg);
+
+        const char* what() const noexcept override;
+    };
 
     Animator();
+
+    Animator *setStaticTexture(sf::Texture*);
 
     void updateSprite(const sf::Vector2f&, const float&) const;
 

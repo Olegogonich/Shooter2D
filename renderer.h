@@ -7,8 +7,6 @@
 #include "Level.h"
 #include "Animator.h"
 
-const float timeStep = 0.001f;
-
 void render(sf::RenderWindow*, Level*);
 
-void render(sf::RenderWindow*, Level*, Animator*);
+void movePlayerCamera(sf::View&, Player*, sf::Window*);

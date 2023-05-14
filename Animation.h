@@ -1,6 +1,7 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include "Constants.h"
 
 struct Animation {
     std::vector<sf::Texture*>* textures;

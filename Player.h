@@ -1,25 +1,30 @@
 #pragma once
-#include <SFML/Graphics.hpp>
-#include <box2d.h>
 #include "GameObject.h"
+#include "Controls.h"
 
 struct Player : GameObject {
 
     const float jump_force = 10.f;
-    const float walking_speed = 5.f;
-    const float friction = 0.8f;
-    const float air_speed = 0.5f;
+    const float top_speed = 5.f;
+    const float acceleration = 1.f;
+    const float friction = 0.6f;
 
-    Player(b2World*, const b2BodyType&, const sf::Vector2f& , const sf::Vector2f&, Animator*);
+    Controls* controls;
 
-    void update() const override;
+    Player(b2World*, const sf::Vector2f&, const sf::Vector2f&, Animator*, Controls*);
 
-    void jump(float height) const;
+    void update() override;
 
-    void walk(float speed) const;
+    bool isOnFloor() const;
 
-    void stop(float friction) const;
+    void move();
 
-    void control() const;
+    void jump();
+
+    void stop();
+
+    void shoot();
+
+    void control();
 };
 
