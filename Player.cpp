@@ -1,17 +1,18 @@
 #include "Player.h"
-#include <iostream>
 
 Player::Player(
-        b2World *world,
-        const sf::Vector2f &pos,
-        const sf::Vector2f &size,
-        Animator *_animator,
-        Controls *_controls
-        )
-        : GameObject(world, b2_dynamicBody, pos, size, _animator) {
+        b2World& world,
+        const sf::Vector2f& pos,
+        const sf::Vector2f& size,
+        const Animator& _animator,
+        const Controls& _controls
+    ) :
+    PhysicalObject(world, b2_dynamicBody, pos, size, _animator) {
 
+    controls = new Controls(_controls);
+
+    canShoot = 0;
     body->SetFixedRotation(true);
-    controls = _controls;
 }
 
 void Player::update() {
@@ -30,12 +31,19 @@ void Player::stop() {
 }
 
 bool Player::isOnFloor() const {
-    return abs(body->GetLinearVelocity().y) < 0.00001f;
+    return abs(body->GetLinearVelocity().y) < 0.0000001f;
 }
 
-void Player::shoot() {
+bool Player::shoot() {
+    canShoot -= canShoot > 0 ? 1 : 0;
+    if (weapon == nullptr || !controls->shootPressed() || canShoot != 0)
+        return false;
 
+    canShoot = weapon->rate;
+
+    return true;
 }
+
 
 void Player::jump()  {
     if (controls->jumpPressed() && isOnFloor()) {
@@ -73,4 +81,13 @@ void Player::control() {
     animator->currentAnimation = "idle";
     jump();
     move();
+}
+
+void Player::setWeapon(const Weapon& _weapon) {
+    weapon = new Weapon(_weapon);
+}
+
+Player::~Player() {
+    delete controls;
+    delete weapon;
 }

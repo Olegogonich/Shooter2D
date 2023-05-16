@@ -1,21 +1,31 @@
 #pragma once
-#include "GameObject.h"
+#include <vector>
+#include <iostream>
+#include "Bullet.h"
+#include "PhysicalObject.h"
 #include "Controls.h"
+#include "Weapon.h"
 
-struct Player : GameObject {
+struct Player : PhysicalObject {
 
-    const float jump_force = 10.f;
-    const float top_speed = 5.f;
-    const float acceleration = 1.f;
+    const float jump_force = 2.5f;
+    const float top_speed = 1.f;
+    const float acceleration = 0.3f;
     const float friction = 0.6f;
 
+    float canShoot;
+    Weapon* weapon;
     Controls* controls;
 
-    Player(b2World*, const sf::Vector2f&, const sf::Vector2f&, Animator*, Controls*);
+    Player(b2World&, const sf::Vector2f&, const sf::Vector2f&, const Animator&, const Controls&);
 
     void update() override;
 
+    void setWeapon(const Weapon&);
+
     bool isOnFloor() const;
+
+    bool shoot();
 
     void move();
 
@@ -23,8 +33,8 @@ struct Player : GameObject {
 
     void stop();
 
-    void shoot();
-
     void control();
+
+    ~Player();
 };
 

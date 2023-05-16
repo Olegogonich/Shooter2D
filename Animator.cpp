@@ -1,24 +1,37 @@
 #include "Animator.h"
 
-#include <utility>
+Animator::Animator() :
+    animations(new std::map<std::string, Animation*>()),
+    sprite(new sf::Sprite()) { }
 
-Animator::Animator() {
-    animations = new std::map<std::string, Animation*>();
-    sprite = new sf::Sprite();
+Animator::Animator(const Animator& temp) :
+    animations(new std::map<std::string, Animation*>()),
+    sprite(new sf::Sprite(*temp.sprite)),
+    currentAnimation(temp.currentAnimation) {
+
+    for (const auto& animation : *temp.animations) {
+        (*animations)[animation.first] = new Animation(*animation.second);
+    }
 }
 
-Animator* Animator::setStaticTexture(sf::Texture *texture) {
+Animator Animator::newStaticTexture(sf::Texture* texture) {
+    Animator animator;
+    animator.setStaticTexture(texture);
+    return animator;
+}
+
+void Animator::setStaticTexture(sf::Texture* texture) {
     currentAnimation.clear();
     sprite->setTexture(*texture);
-    return this;
 }
 
 void Animator::update(const sf::Vector2f& pos, const float& rotation) const {
+    updateSprite(pos, rotation);
+
     if (currentAnimation.empty())
         return;
 
     getCurrentAnimation()->update();
-    updateSprite(pos, rotation);
 }
 
 void Animator::updateSprite(const sf::Vector2f& pos, const float& rotation) const {
@@ -31,22 +44,23 @@ void Animator::updateSprite(const sf::Vector2f& pos, const float& rotation) cons
 
 sf::Texture* Animator::getCurrentTexture() const {
     if (currentAnimation.empty()) {
-        return const_cast<sf::Texture*>(sprite->getTexture());
+        return const_cast<sf::Texture *>(sprite->getTexture());
     }
     return getCurrentAnimation()->getCurrentTexture();
 }
 
 Animation* Animator::getCurrentAnimation() const {
     if (!animations->count(currentAnimation)) {
-        std::string exceptionText = "AnimatorException: no animation named \"" + currentAnimation + "\"";
+        std::string exceptionText = "No animation named \"" + currentAnimation + "\"";
         throw (AnimatorException(exceptionText));
     }
 
     return animations->at(currentAnimation);
 }
 
-void Animator::createAnimation(const std::string& name, std::vector<sf::Texture*>* textures, uint framesTillNext) const {
+void Animator::createAnimation(const std::string& name, const std::vector<sf::Texture*>& textures, uint framesTillNext) {
     (*animations)[name] = new Animation(textures, framesTillNext);
+    currentAnimation = name;
 }
 
 Animator::AnimatorException::AnimatorException(std::string msg) : m_msg(std::move(msg)) { }
@@ -56,7 +70,7 @@ const char *Animator::AnimatorException::what() const noexcept {
 }
 
 Animator::~Animator() {
-    for (const auto& animation : *animations) {
+    for (auto& animation : *animations) {
         delete animation.second;
     }
     delete animations;

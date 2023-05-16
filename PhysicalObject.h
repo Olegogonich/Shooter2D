@@ -5,13 +5,15 @@
 #include "Animator.h"
 #include "Constants.h"
 
-struct GameObject {
+struct PhysicalObject {
 
     Animator* animator;
     sf::RectangleShape* shape;
     b2Body* body;
 
-    GameObject(b2World*, const b2BodyType&, sf::Vector2f, sf::Vector2f, Animator*);
+    PhysicalObject(b2World&, const b2BodyType&, sf::Vector2f, sf::Vector2f, const Animator&);
+
+    PhysicalObject(b2World&, const b2BodyType&, sf::Vector2f, sf::Vector2f, sf::Texture*);
 
     virtual void update();
 
@@ -19,9 +21,5 @@ struct GameObject {
 
     void updateShapeRotation() const;
 
-    std::string toStringShapePosition() const;
-
-    std::string toStringBodyPosition() const;
-
-    ~GameObject();
+    ~PhysicalObject();
 };

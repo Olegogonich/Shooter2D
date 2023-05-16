@@ -8,7 +8,9 @@ struct Animation {
     uint frame;
     uint framesTillNext;
 
-    Animation(std::vector<sf::Texture*>* _textures, uint _framesTillNext);
+    Animation(const std::vector<sf::Texture*>&, uint);
+
+    Animation(const Animation&);
 
     void update();
 

@@ -1,15 +1,33 @@
 #include <SFML/Graphics.hpp>
 #include <box2d.h>
 #include "Level.h"
-#include "GameObject.h"
 #include "renderer.h"
 #include "Animator.h"
 #include "Controls.h"
+#include "Weapon.h"
+#include "Pistol.h"
 
+Controls getDefaultControls() {
+    Controls controls;
+
+    controls.addJumpKey(sf::Keyboard::Key::Space);
+    controls.addJumpKey(sf::Keyboard::Key::Up);
+    controls.addJumpKey(sf::Keyboard::Key::W);
+
+    controls.addRightKey(sf::Keyboard::Key::Right);
+    controls.addRightKey(sf::Keyboard::Key::D);
+
+    controls.addLeftKey(sf::Keyboard::Key::Left);
+    controls.addLeftKey(sf::Keyboard::Key::A);
+
+    controls.setShootButton(sf::Mouse::Button::Left);
+
+    return controls;
+}
 
 int main() {
 
-    const b2Vec2 gravity(0.0f, 9.8f);
+    const b2Vec2 gravity(0.0f, 2.f);
     const sf::Vector2u screen_size {1600, 1000};
 
     auto* window = new sf::RenderWindow();
@@ -17,79 +35,26 @@ int main() {
     window->setVerticalSyncEnabled(true);
     window->setFramerateLimit(60);
 
-    auto* level = new Level(gravity);
+    auto* level = new Level(gravity, window);
 
-    auto* playerAnimator = new Animator();
-    auto* playerTextures = new std::vector<sf::Texture*>();
+    Animator animator;
+    animator.createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
+    animator.createAnimation("idle", {(*level->textures)["player_texture"]}, 1);
 
-    std::string paths2[] = {
-            "/Users/oleh/CLionProjects/Shooter2D/resources/images/man0.png",
-            "/Users/oleh/CLionProjects/Shooter2D/resources/images/man1.png"
-    };
+    level->createPlayer({0, 0}, {1, 2}, animator, getDefaultControls());
 
-    for (const std::string& path : paths2) {
-        auto *texture = new sf::Texture();
-        if (!texture->loadFromFile(path)) {
-            std::cout << "file not found" << '\n';
-        }
-        texture->setSmooth(true);
-        playerTextures->push_back(texture);
-    }
+    level->createStatic({-70, 25}, {200, 3}, (*level->textures)["pistol_texture"]);
+    level->createStatic({30, 17}, {4, 4}, (*level->textures)["pistol_texture"]);
+    level->createStatic({18, 18.5}, {1.2, 1}, (*level->textures)["pistol_texture"]);
+    level->createStatic({24, 17.25}, {1.2, 1}, (*level->textures)["pistol_texture"]);
+    level->createStatic({36, 20}, {1.2, 1}, (*level->textures)["pistol_texture"]);
+    level->createStatic({42, 16.5}, {1.2, 1}, (*level->textures)["pistol_texture"]);
+    level->createObject(b2_dynamicBody, {0, 0}, {3, 3}, (*level->textures)["pistol_texture"]);
 
-    playerAnimator->createAnimation("running", playerTextures, 5);
+    level->player->setWeapon(level->getPistol());
 
-    auto* textures1 = new std::vector<sf::Texture*>();
+    render(level);
 
-    std::string paths1[] = {
-            "/Users/oleh/CLionProjects/Shooter2D/resources/images/man0.png",
-    };
-
-    for (const std::string& path : paths1) {
-        auto *texture = new sf::Texture();
-        if (!texture->loadFromFile(path)) {
-            std::cout << "file not found" << '\n';
-        }
-        texture->setSmooth(true);
-        textures1->push_back(texture);
-    }
-
-    playerAnimator->createAnimation("idle", textures1, 1);
-
-    playerAnimator->currentAnimation = "idle";
-
-    auto* controls = new Controls();
-
-    std::vector<sf::Keyboard::Key> keys;
-    keys.push_back(sf::Keyboard::Key::A);
-
-    controls->addJumpKey(sf::Keyboard::Key::Space);
-    controls->addJumpKey(sf::Keyboard::Key::Up);
-    controls->addJumpKey(sf::Keyboard::Key::W);
-
-    controls->addRightKey(sf::Keyboard::Key::Right);
-    controls->addRightKey(sf::Keyboard::Key::D);
-
-    controls->addLeftKey(sf::Keyboard::Key::Left);
-    controls->addLeftKey(sf::Keyboard::Key::A);
-
-    controls->setShootButton(sf::Mouse::Button::Left);
-
-    auto* massData = new b2MassData();
-    massData->mass = 1;
-
-    level->createPlayer({10, 10}, {1, 2}, playerAnimator, controls);
-    level->createStatic({-70, 25}, {200, 3}, playerTextures->at(0));
-    level->createStatic({30, 17}, {4, 4}, playerTextures->at(0));
-    level->createStatic({18, 18.5}, {1.2, 1}, playerTextures->at(1));
-    level->createStatic({24, 17.25}, {1.2, 1}, playerTextures->at(1));
-    level->createStatic({36, 20}, {1.2, 1}, playerTextures->at(1));
-    level->createStatic({42, 16.5}, {1.2, 1}, playerTextures->at(1));
-
-    render(window, level);
-
-    delete textures1;
-    delete playerTextures;
-    delete controls;
     delete level;
 
     return 0;

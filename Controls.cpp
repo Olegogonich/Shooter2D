@@ -2,10 +2,7 @@
 
 
 bool Controls::jumpPressed() const {
-    return std::any_of(
-            jumpKeys->cbegin(),
-            jumpKeys->cend(),
-            [](sf::Keyboard::Key key){return sf::Keyboard::isKeyPressed(key);});
+    return std::any_of(jumpKeys->cbegin(),jumpKeys->cend(),[](sf::Keyboard::Key key){return sf::Keyboard::isKeyPressed(key);});
 }
 
 bool Controls::rightPressed() const {
@@ -16,20 +13,11 @@ bool Controls::rightPressed() const {
 }
 
 bool Controls::leftPressed() const {
-    return std::any_of(
-            leftKeys->cbegin(),
-            leftKeys->cend(),
-            [](sf::Keyboard::Key key){return sf::Keyboard::isKeyPressed(key);});
+    return std::any_of(leftKeys->cbegin(),leftKeys->cend(),[](sf::Keyboard::Key key){return sf::Keyboard::isKeyPressed(key);});
 }
 
 bool Controls::shootPressed() const {
     return sf::Mouse::isButtonPressed(shootButton);
-}
-
-Controls::~Controls() {
-    delete jumpKeys;
-    delete rightKeys;
-    delete leftKeys;
 }
 
 void Controls::addJumpKey(sf::Keyboard::Key key) const {
@@ -48,8 +36,20 @@ void Controls::setShootButton(sf::Mouse::Button button) {
     shootButton = button;
 }
 
+Controls::Controls(const Controls& temp) :
+        jumpKeys(new std::vector<sf::Keyboard::Key>(*temp.jumpKeys)),
+        rightKeys(new std::vector<sf::Keyboard::Key>(*temp.rightKeys)),
+        leftKeys(new std::vector<sf::Keyboard::Key>(*temp.leftKeys))
+        { }
+
 Controls::Controls() :
         jumpKeys(new std::vector<sf::Keyboard::Key>()),
         rightKeys(new std::vector<sf::Keyboard::Key>()),
         leftKeys(new std::vector<sf::Keyboard::Key>())
         { }
+
+Controls::~Controls() {
+    delete jumpKeys;
+    delete rightKeys;
+    delete leftKeys;
+}

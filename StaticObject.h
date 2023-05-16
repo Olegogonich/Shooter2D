@@ -1,9 +1,7 @@
 #pragma once
-#include "GameObject.h"
+#include "PhysicalObject.h"
 
-struct StaticObject : GameObject {
+struct StaticObject : PhysicalObject {
 
-    Animator* animator = new Animator();
-
-    StaticObject(b2World*, const sf::Vector2f&, const sf::Vector2f&, sf::Texture*);
+    StaticObject(b2World& world, const sf::Vector2f& pos, const sf::Vector2f& size, sf::Texture* texture);
 };

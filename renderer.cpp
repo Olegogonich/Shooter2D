@@ -1,38 +1,37 @@
 #include "renderer.h"
 
-const float timeStep = 0.001f;
-
 const float n = 0.05;
 const float h = 0.45;
 const float r = 0.1;
 const float offset_y = 200;
 
-void render(sf::RenderWindow* window, Level* level) {
+void render(Level* level) {
 
-    sf::View view = window->getDefaultView();
+    sf::View view = level->window->getDefaultView();
+    level->view = &view;
 
-    while (window->isOpen())
+    while (level->window->isOpen())
     {
         sf::Event event{};
-        while (window->pollEvent(event))
+        while (level->window->pollEvent(event))
         {
             if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-                window->close();
+                level->window->close();
         }
-        window->clear(sf::Color::White);
+        level->window->clear(sf::Color::White);
 
-        for (GameObject* object : *level->objects) {
+        for (PhysicalObject* object : *level->objects) {
             object->update();
-            window->draw(*object->shape);
-            window->draw(*object->animator->sprite);
+            level->window->draw(*object->shape);
+            level->window->draw(*object->animator->sprite);
         }
-        window->setView(view);
-        window->display();
 
-        movePlayerCamera(view, level->player, window);
+        level->update();
 
-        level->world->Step(timeStep * 100, 10, 10);
-        std::this_thread::sleep_for(std::chrono::milliseconds((long long)(timeStep * 1000)));
+        level->window->setView(view);
+        level->window->display();
+
+        movePlayerCamera(view, level->player, level->window);
     }
 }
 
@@ -41,5 +40,5 @@ void movePlayerCamera(sf::View &view, Player *player, sf::Window *window) {
     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
     float x = ((mousePos.x - window->getSize().x * 0.5f) * h + pos.x * zoom - view.getCenter().x);
     float y = ((mousePos.y - window->getSize().y * 0.5f) * h + pos.y * zoom - offset_y - view.getCenter().y);
-    view.move(pow(x * n * r, 3), y * n);
+    view.move(pow(x * n * r, 3), y * n * 0.6);
 }

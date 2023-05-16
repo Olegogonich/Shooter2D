@@ -5,8 +5,7 @@
 #include <thread>
 #include <iostream>
 #include "Level.h"
-#include "Animator.h"
 
-void render(sf::RenderWindow*, Level*);
+void render(Level*);
 
 void movePlayerCamera(sf::View&, Player*, sf::Window*);

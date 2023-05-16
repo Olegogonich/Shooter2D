@@ -12,6 +12,8 @@ struct Controls {
 
     Controls();
 
+    Controls(const Controls&);
+
     void addJumpKey(sf::Keyboard::Key) const;
 
     void addRightKey(sf::Keyboard::Key) const;
