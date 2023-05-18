@@ -8,4 +8,4 @@
 
 void render(Level*);
 
-void movePlayerCamera(sf::View&, Player*, sf::Window*);
+void movePlayerCamera(sf::View&, Player&, sf::Window&);

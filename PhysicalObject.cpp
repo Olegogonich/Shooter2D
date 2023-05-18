@@ -1,8 +1,9 @@
 #include "PhysicalObject.h"
 
-PhysicalObject::PhysicalObject(b2World& world, const b2BodyType& type, sf::Vector2f pos, sf::Vector2f size, const Animator& _animator) {
+PhysicalObject::PhysicalObject(b2World& world, const b2BodyType& type, sf::Vector2f pos, sf::Vector2f _size, const Animator& _animator) {
     shape = new sf::RectangleShape();
     animator = new Animator(_animator);
+    size = _size;
 
     b2BodyDef bodyDef;
     bodyDef.type = type;
@@ -29,12 +30,6 @@ PhysicalObject::PhysicalObject(b2World& world, const b2BodyType& type, sf::Vecto
     shape->setOrigin(shape->getSize().x * 0.5f, shape->getSize().y * 0.5f);
     shape->setPosition(shape->getPosition().x * zoom, shape->getPosition().y * zoom);
 
-    sf::Vector2u textureSize = animator->getCurrentTexture()->getSize();
-    sf::Vector2f scaling = {size.x * 2.f * zoom / (float)textureSize.x, size.y * 2.f * zoom / (float)textureSize.y};
-    animator->sprite->setTexture(*animator->getCurrentTexture());
-    animator->sprite->setScale(scaling);
-    animator->sprite->setOrigin((float)textureSize.x * 0.5f, (float)textureSize.y * 0.5f);
-    animator->sprite->setPosition(pos.x * zoom, pos.y * zoom);
 }
 
 PhysicalObject::PhysicalObject(b2World &world, const b2BodyType& type, sf::Vector2f pos, const sf::Vector2f size, sf::Texture* _texture) :
@@ -43,7 +38,7 @@ PhysicalObject::PhysicalObject(b2World &world, const b2BodyType& type, sf::Vecto
 void PhysicalObject::update() {
     updateShapePosition();
     updateShapeRotation();
-    animator->update({body->GetPosition().x, body->GetPosition().y}, body->GetAngle());
+    animator->update({body->GetPosition().x, body->GetPosition().y}, shape->getSize(), body->GetAngle());
 }
 
 void PhysicalObject::updateShapePosition() const {

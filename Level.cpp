@@ -4,6 +4,7 @@ Level::Level(const b2Vec2& gravity, sf::RenderWindow *window) :
     textures(new std::map<std::string, sf::Texture*>()),
     objects(new std::vector<PhysicalObject*>()),
     bullets(new std::vector<Bullet*>()),
+    view(new sf::View(window->getDefaultView())),
     world(new b2World(gravity)),
     window(window)
     { loadDefaultTextures(); }
@@ -69,38 +70,67 @@ void Level::checkPlayerShooting() const {
     b2Vec2 playerPos = player->body->GetPosition();
     sf::Vector2f viewPos = view->getCenter();
     sf::Vector2f pos (viewPos.x + mousePos.x, viewPos.y + mousePos.y);
+    float angle = atan2(pos.y / zoom - playerPos.y, pos.x / zoom - playerPos.x) + 360 * DEGTORAD;
 
-    std::cout << "created bullet - " << createBullet(
+    float step = 0.1;
+    float x_modifier = 5;
+    float y_modifier = 5;
+    while (abs(cos(angle)) * x_modifier < player->size.x / antizoom) {
+        x_modifier += step;
+    }
+    while (abs(sin(angle)) * y_modifier < player->size.y / antizoom) {
+        y_modifier += step;
+    }
+
+    Bullet* b = createBullet(
         {
-             playerPos.x * antizoom,
-             playerPos.y * antizoom
+             playerPos.x * antizoom + cos(angle) * x_modifier,
+             playerPos.y * antizoom + sin(angle) * y_modifier
         },
         {
             player->weapon->bullet_size,
             player->weapon->bullet_size
         },
-        atan2(pos.y / zoom - playerPos.y, pos.x / zoom - playerPos.x) + 360 * DEGTORAD,
+        angle,
         player->weapon->power,
         *player->weapon->bulletAnimator
-    ) << '\n';
-
+    );
+    std::cout << "created bullet - " << b << '\n';
 }
 
 void Level::update() const {
-    checkPlayerShooting();
     checkBullets();
+    checkPlayerShooting();
     world->Step(0.1, 10, 10);
 }
 
-void Level::checkBullets() const {
-    for (Bullet* bullet : *bullets) {
-        if (bullet->body->GetContactList() == nullptr || bullet->body->GetContactList()->other->IsBullet())
-            continue;
+void Level::deleteBullet(Bullet* bullet) const {
+    objects->erase(find(objects->begin(), objects->end(), bullet));
+    bullets->erase(find(bullets->begin(), bullets->end(), bullet));
+    delete bullet;
+}
 
-        objects->erase(find(objects->begin(), objects->end(), bullet));
-        bullets->erase(find(bullets->begin(), bullets->end(), bullet));
-        std::cout << "deleted bullet - " << bullet << '\n';
-        delete bullet;
+void Level::checkBullets() const {
+
+    for (Bullet* bullet : *bullets) {
+
+        if (bullet->lifetime == 0) {
+            deleteBullet(bullet);
+            return;
+        }
+
+        bool collide = false;
+        for (PhysicalObject* object : *objects) {
+            if (bullet == object)
+                return;
+
+            if (Level::collide(bullet, object)) {
+                collide = true;
+                break;
+            }
+        }
+        if (collide)
+            deleteBullet(bullet);
     }
 }
 
@@ -111,21 +141,6 @@ Weapon Level::getPistol() const {
     bulletAnimator.createAnimation("flying", {(*textures)["pistol_bullet_frame1_texture"], (*textures)["pistol_bullet_frame2_texture"]}, 1);
 
     return {Pistol::power, Pistol::reload, Pistol::rate, Pistol::accuracy, Pistol::recoil, Pistol::bullet_size, Pistol::capacity, weaponAnimator, bulletAnimator};
-}
-
-Level::~Level() {
-    for (PhysicalObject* object : *objects) {
-        delete object;
-    }
-    delete objects;
-    for (const auto& texture : *textures) {
-        delete texture.second;
-    }
-    delete textures;
-    delete view;
-    delete bullets;
-    delete world;
-    delete window;
 }
 
 void Level::loadDefaultTextures() const {
@@ -139,5 +154,31 @@ void Level::loadDefaultTextures() const {
 
         (*textures)[name_path.first] = texture;
     }
+}
+
+Level::~Level() {
+    for (PhysicalObject* object : *objects) {
+        delete object;
+    }
+    delete objects;
+    for (const auto& texture : *textures) {
+        delete texture.second;
+    }
+    delete textures;
+    delete bullets;
+    delete view;
+    delete world;
+    delete window;
+}
+
+bool Level::collide(PhysicalObject* obj1, PhysicalObject* obj2) {
+
+    b2Vec2 pos1 = obj1->body->GetPosition();
+    sf::Vector2f size1 = obj1->size;
+
+    b2Vec2 pos2 = obj2->body->GetPosition();
+    sf::Vector2f size2 = obj2->size;
+
+    return abs(pos1.x - pos2.x) - 0.1 < (size1.x + size2.x) && abs(pos1.y - pos2.y) - 0.1 < (size1.y + size2.y);
 }
 

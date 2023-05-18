@@ -18,7 +18,7 @@ Player::Player(
 void Player::update() {
     updateShapePosition();
     updateShapeRotation();
-    animator->update({body->GetPosition().x, body->GetPosition().y}, body->GetAngle());
+    animator->update({body->GetPosition().x, body->GetPosition().y}, shape->getSize(), body->GetAngle());
     control();
 }
 

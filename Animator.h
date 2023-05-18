@@ -20,9 +20,9 @@ struct Animator {
 
     static Animator newStaticTexture(sf::Texture*);
 
-    void updateSprite(const sf::Vector2f&, const float&) const;
+    void updateSprite(const sf::Vector2f&, const sf::Vector2f&, const float&) const;
 
-    void update(const sf::Vector2f&, const float&) const;
+    void update(const sf::Vector2f&, const sf::Vector2f&, const float&) const;
 
     sf::Texture* getCurrentTexture() const;
 

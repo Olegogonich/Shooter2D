@@ -37,11 +37,9 @@ int main() {
 
     auto* level = new Level(gravity, window);
 
-    Animator animator;
-    animator.createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
-    animator.createAnimation("idle", {(*level->textures)["player_texture"]}, 1);
-
-    level->createPlayer({0, 0}, {1, 2}, animator, getDefaultControls());
+    Player* player = level->createPlayer({0, 0}, {1, 2}, Animator(), getDefaultControls());
+    player->animator->createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
+    player->animator->createAnimation("idle", {(*level->textures)["player_texture"]}, 1);
 
     level->createStatic({-70, 25}, {200, 3}, (*level->textures)["pistol_texture"]);
     level->createStatic({30, 17}, {4, 4}, (*level->textures)["pistol_texture"]);

@@ -38,6 +38,9 @@ struct Level {
 
     Weapon getPistol() const;
 
+    void deleteBullet(Bullet*) const;
+
+    static bool collide(PhysicalObject*, PhysicalObject*);
 
     void checkPlayerShooting() const;
 

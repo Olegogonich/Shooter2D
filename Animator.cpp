@@ -25,8 +25,8 @@ void Animator::setStaticTexture(sf::Texture* texture) {
     sprite->setTexture(*texture);
 }
 
-void Animator::update(const sf::Vector2f& pos, const float& rotation) const {
-    updateSprite(pos, rotation);
+void Animator::update(const sf::Vector2f& pos, const sf::Vector2f& size, const float& rotation) const {
+    updateSprite(pos, size, rotation);
 
     if (currentAnimation.empty())
         return;
@@ -34,13 +34,15 @@ void Animator::update(const sf::Vector2f& pos, const float& rotation) const {
     getCurrentAnimation()->update();
 }
 
-void Animator::updateSprite(const sf::Vector2f& pos, const float& rotation) const {
-    sprite->setTexture(*getCurrentTexture());
-    auto textureSize = getCurrentTexture()->getSize();
+void Animator::updateSprite(const sf::Vector2f& pos, const sf::Vector2f& size, const float& rotation) const {
+    sf::Vector2u textureSize = getCurrentTexture()->getSize();
+    sf::Vector2f scaling = {size.x / (float)textureSize.x, size.y / (float)textureSize.y};
+    sprite->setScale(scaling);
     sprite->setOrigin((float)textureSize.x * 0.5f, (float)textureSize.y * 0.5f);
     sprite->setPosition({pos.x * zoom, pos.y * zoom});
     sprite->setRotation(rotation * RADTODEG);
 }
+
 
 sf::Texture* Animator::getCurrentTexture() const {
     if (currentAnimation.empty()) {

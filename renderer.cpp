@@ -7,9 +7,6 @@ const float offset_y = 200;
 
 void render(Level* level) {
 
-    sf::View view = level->window->getDefaultView();
-    level->view = &view;
-
     while (level->window->isOpen())
     {
         sf::Event event{};
@@ -28,17 +25,18 @@ void render(Level* level) {
 
         level->update();
 
-        level->window->setView(view);
+        level->window->setView(*level->view);
+
         level->window->display();
 
-        movePlayerCamera(view, level->player, level->window);
+        movePlayerCamera(*level->view, *level->player, *level->window);
     }
 }
 
-void movePlayerCamera(sf::View &view, Player *player, sf::Window *window) {
-    b2Vec2 pos = player->body->GetPosition();
-    sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-    float x = ((mousePos.x - window->getSize().x * 0.5f) * h + pos.x * zoom - view.getCenter().x);
-    float y = ((mousePos.y - window->getSize().y * 0.5f) * h + pos.y * zoom - offset_y - view.getCenter().y);
+void movePlayerCamera(sf::View& view, Player& player, sf::Window& window) {
+    b2Vec2 pos = player.body->GetPosition();
+    sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+    float x = ((mousePos.x - window.getSize().x * 0.5f) * h + pos.x * zoom - view.getCenter().x);
+    float y = ((mousePos.y - window.getSize().y * 0.5f) * h + pos.y * zoom - offset_y - view.getCenter().y);
     view.move(pow(x * n * r, 3), y * n * 0.6);
 }
