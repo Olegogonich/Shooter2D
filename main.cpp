@@ -37,9 +37,11 @@ int main() {
 
     auto* level = new Level(gravity, window);
 
+
+
     Player* player = level->createPlayer({0, 0}, {1, 2}, Animator(), getDefaultControls());
     player->animator->createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
-    player->animator->createAnimation("idle", {(*level->textures)["player_texture"]}, 1);
+    player->animator->createAnimation("idle", {(*level->textures)["pistol_bullet_frame1_texture"]}, 1);
 
     level->createStatic({-70, 25}, {200, 3}, (*level->textures)["pistol_texture"]);
     level->createStatic({30, 17}, {4, 4}, (*level->textures)["pistol_texture"]);
@@ -47,7 +49,7 @@ int main() {
     level->createStatic({24, 17.25}, {1.2, 1}, (*level->textures)["pistol_texture"]);
     level->createStatic({36, 20}, {1.2, 1}, (*level->textures)["pistol_texture"]);
     level->createStatic({42, 16.5}, {1.2, 1}, (*level->textures)["pistol_texture"]);
-    level->createObject(b2_dynamicBody, {0, 0}, {3, 3}, (*level->textures)["pistol_texture"]);
+    level->createObject(b2_dynamicBody, {-10, 0}, {3, 3}, (*level->textures)["pistol_texture"]);
 
     level->player->setWeapon(level->getPistol());
 

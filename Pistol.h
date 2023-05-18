@@ -6,7 +6,7 @@
 
 struct Pistol {
 
-    constexpr const static float power = 3;
+    constexpr const static float power = 100;
     constexpr static float reload = 100;
     constexpr static float rate = 10;
     constexpr static float accuracy = 0.8;

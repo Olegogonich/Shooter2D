@@ -31,6 +31,7 @@ void Animator::update(const sf::Vector2f& pos, const sf::Vector2f& size, const f
     if (currentAnimation.empty())
         return;
 
+    sprite->setTexture(*getCurrentTexture());
     getCurrentAnimation()->update();
 }
 

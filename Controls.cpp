@@ -1,5 +1,5 @@
 #include "Controls.h"
-
+#include <iostream>
 
 bool Controls::jumpPressed() const {
     return std::any_of(jumpKeys->cbegin(),jumpKeys->cend(),[](sf::Keyboard::Key key){return sf::Keyboard::isKeyPressed(key);});

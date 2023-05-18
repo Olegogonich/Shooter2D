@@ -11,7 +11,7 @@ Player::Player(
 
     controls = new Controls(_controls);
 
-    canShoot = 0;
+    cannotShoot = 0;
     body->SetFixedRotation(true);
 }
 
@@ -35,11 +35,11 @@ bool Player::isOnFloor() const {
 }
 
 bool Player::shoot() {
-    canShoot -= canShoot > 0 ? 1 : 0;
-    if (weapon == nullptr || !controls->shootPressed() || canShoot != 0)
+    cannotShoot -= cannotShoot > 0 ? 1 : 0;
+    if (weapon == nullptr || !controls->shootPressed() || cannotShoot != 0)
         return false;
 
-    canShoot = weapon->rate;
+    cannotShoot = weapon->rate;
 
     return true;
 }

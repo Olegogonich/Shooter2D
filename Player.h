@@ -13,7 +13,7 @@ struct Player : PhysicalObject {
     const float acceleration = 0.3f;
     const float friction = 0.6f;
 
-    float canShoot;
+    float cannotShoot;
     Weapon* weapon;
     Controls* controls;
 

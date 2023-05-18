@@ -61,6 +61,7 @@ sf::Texture* Level::loadTexture(const std::string& name, const std::string& path
 }
 
 void Level::checkPlayerShooting() const {
+
     if (player->weapon == nullptr || !player->shoot())
         return;
 
@@ -72,20 +73,10 @@ void Level::checkPlayerShooting() const {
     sf::Vector2f pos (viewPos.x + mousePos.x, viewPos.y + mousePos.y);
     float angle = atan2(pos.y / zoom - playerPos.y, pos.x / zoom - playerPos.x) + 360 * DEGTORAD;
 
-    float step = 0.1;
-    float x_modifier = 5;
-    float y_modifier = 5;
-    while (abs(cos(angle)) * x_modifier < player->size.x / antizoom) {
-        x_modifier += step;
-    }
-    while (abs(sin(angle)) * y_modifier < player->size.y / antizoom) {
-        y_modifier += step;
-    }
-
-    Bullet* b = createBullet(
+    Bullet* bullet = createBullet(
         {
-             playerPos.x * antizoom + cos(angle) * x_modifier,
-             playerPos.y * antizoom + sin(angle) * y_modifier
+             playerPos.x * antizoom,
+             playerPos.y * antizoom
         },
         {
             player->weapon->bullet_size,
@@ -95,7 +86,12 @@ void Level::checkPlayerShooting() const {
         player->weapon->power,
         *player->weapon->bulletAnimator
     );
-    std::cout << "created bullet - " << b << '\n';
+
+    b2Vec2 bulletPos;
+    while (Level::collide(bullet, player)) {
+        bulletPos = bullet->body->GetPosition();
+        bullet->body->SetTransform({bulletPos.x + cos(angle) * 0.01f, bulletPos.y + sin(angle) * 0.01f}, angle);
+    }
 }
 
 void Level::update() const {
@@ -114,23 +110,20 @@ void Level::checkBullets() const {
 
     for (Bullet* bullet : *bullets) {
 
-        if (bullet->lifetime == 0) {
+        if (bullet->lifetime <= 0) {
             deleteBullet(bullet);
-            return;
+            continue;
         }
 
-        bool collide = false;
         for (PhysicalObject* object : *objects) {
-            if (bullet == object)
-                return;
+            if (object->body->IsBullet())
+                continue;
 
             if (Level::collide(bullet, object)) {
-                collide = true;
+                deleteBullet(bullet);
                 break;
             }
         }
-        if (collide)
-            deleteBullet(bullet);
     }
 }
 
@@ -179,6 +172,8 @@ bool Level::collide(PhysicalObject* obj1, PhysicalObject* obj2) {
     b2Vec2 pos2 = obj2->body->GetPosition();
     sf::Vector2f size2 = obj2->size;
 
-    return abs(pos1.x - pos2.x) - 0.1 < (size1.x + size2.x) && abs(pos1.y - pos2.y) - 0.1 < (size1.y + size2.y);
+    float inaccuracy = 0.2;
+
+    return abs(pos1.x - pos2.x) - inaccuracy < (size1.x + size2.x) && abs(pos1.y - pos2.y) - inaccuracy < (size1.y + size2.y);
 }
 

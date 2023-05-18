@@ -13,6 +13,7 @@ Bullet::Bullet(b2World& world, const sf::Vector2f &pos, const sf::Vector2f &size
 
 Bullet::Bullet(b2World& world, const sf::Vector2f &pos, const sf::Vector2f &size, const float& _angle, const float& _power, const Animator& _animator)
     : PhysicalObject(world, b2_dynamicBody, pos, size, _animator) {
+    lifetime = bullet_lifetime;
     body->SetBullet(true);
     body->SetLinearDamping(0.f);
     angle = _angle;
