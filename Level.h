@@ -39,8 +39,6 @@ struct Level {
 
     Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const uint&, const float&, const float&, const Animator&) const;
 
-    void displayEntityInfo(Entity*) const;
-
     Weapon getPistol() const;
 
     void deleteBullet(Bullet*) const;
@@ -73,4 +71,12 @@ private:
     void loadDefaultTextures() const;
 
     void movePlayerCamera() const;
+
+    void displayEntityInfo(Entity*) const;
+
+    void displayPlayerInfo() const;
+
+    sf::Vector2f getMouseGlobalPosition() const;
+
+    float getMouseToEntityAngle(Entity*) const;
 };

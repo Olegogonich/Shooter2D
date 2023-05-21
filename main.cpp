@@ -37,9 +37,9 @@ int main() {
     auto* level = new Level(gravity, window);
 
     Player* player = level->createPlayer({0, 0}, {1, 2}, Animator(), getDefaultControls());
+    player->animator->createAnimation("dead", {(*level->textures)["pistol_texture"]}, 1);
     player->animator->createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
     player->animator->createAnimation("idle", {(*level->textures)["pistol_bullet_frame1_texture"]}, 1);
-    player->animator->createAnimation("dead", {(*level->textures)["pistol_texture"]}, 1);
     player->setWeapon(level->getPistol());
 
     Animator staticAnimator = Animator::newStaticTexture((*level->textures)["pistol_texture"]);

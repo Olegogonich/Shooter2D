@@ -47,7 +47,7 @@ void Animator::updateSprite(const sf::Vector2f& pos, const sf::Vector2f& size, c
 
 sf::Texture* Animator::getCurrentTexture() const {
     if (currentAnimation.empty()) {
-        return const_cast<sf::Texture *>(sprite->getTexture());
+        return const_cast<sf::Texture*>(sprite->getTexture());
     }
     return getCurrentAnimation()->getCurrentTexture();
 }

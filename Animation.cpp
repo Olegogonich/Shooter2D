@@ -9,7 +9,11 @@ Animation::Animation(const std::vector<sf::Texture*>& _textures, uint framesTill
     }
 }
 
-Animation::Animation(const Animation& temp) : frame(0), framesTillNext(temp.framesTillNext), textures(temp.textures) { }
+Animation::Animation(const Animation& temp) : frame(0), framesTillNext(temp.framesTillNext), textures(new std::vector<sf::Texture*>) {
+    for (sf::Texture* texture : *temp.textures) {
+        textures->push_back(texture);
+    }
+}
 
 void Animation::update() {
     frame++;

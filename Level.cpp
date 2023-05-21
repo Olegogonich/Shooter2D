@@ -60,13 +60,8 @@ void Level::checkShooting() const {
         if (!entity->shooting)
             return;
 
-        sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-        mousePos.x -= window->getSize().x * 0.5f;
-        mousePos.y -= window->getSize().y * 0.5f;
         b2Vec2 entityPos = entity->body->GetPosition();
-        sf::Vector2f viewPos = view->getCenter();
-        sf::Vector2f pos(viewPos.x + mousePos.x, viewPos.y + mousePos.y);
-        float angle = atan2(pos.y / zoom - entityPos.y, pos.x / zoom - entityPos.x) + 360 * DEGTORAD;
+        float angle = getMouseToEntityAngle(entity);
 
         Bullet *bullet = createBullet(
                 {
@@ -134,12 +129,10 @@ void Level::checkBullets() const {
 }
 
 Weapon Level::getPistol() const {
-
-    Animator weaponAnimator = Animator::newStaticTexture((*textures)["pistol_texture"]);
-    Animator bulletAnimator;
-    bulletAnimator.createAnimation("flying", {(*textures)["pistol_bullet_frame1_texture"], (*textures)["pistol_bullet_frame2_texture"]}, 1);
-
-    return {Pistol::power, Pistol::damage, Pistol::reload, Pistol::rate, Pistol::accuracy, Pistol::recoil, Pistol::bullet_size, Pistol::capacity, weaponAnimator, bulletAnimator};
+    Weapon weapon (Pistol::power, Pistol::damage, Pistol::reload, Pistol::rate, Pistol::accuracy, Pistol::recoil, Pistol::bullet_size, Pistol::capacity, Animator(), Animator());
+    weapon.weaponAnimator->createAnimation("idle", {(*textures)["pistol_texture"]}, 10);
+    weapon.bulletAnimator.createAnimation("flying", {(*textures)["pistol_bullet_frame1_texture"], (*textures)["pistol_bullet_frame2_texture"]}, 1);
+    return weapon;
 }
 
 void Level::loadDefaultTextures() const {
@@ -237,11 +230,18 @@ void Level::start() {
             window->draw(*object->animator->sprite);
         }
         for (Entity* entity : *entities) {
+            if (entity == player)
+                entity->weapon->angle = getMouseToEntityAngle(entity);
             entity->update();
             window->draw(*entity->shape);
             window->draw(*entity->animator->sprite);
+            window->draw(*entity->weapon->weaponAnimator->sprite);
             displayEntityInfo(entity);
         }
+        if (player == nullptr)
+            gameover();
+        else
+            displayPlayerInfo();
 
         update();
 
@@ -261,7 +261,22 @@ void Level::start() {
 }
 
 void Level::gameover() const {
+    sf::Text gameoverText;
+    uint text_size = 200;
 
+    gameoverText.setFont(*(*fonts)["default_font"]);
+    gameoverText.setString("Game Over");
+    gameoverText.setCharacterSize(text_size);
+    gameoverText.setFillColor(sf::Color::Black);
+    gameoverText.setStyle(sf::Text::Bold);
+
+    sf::Vector2f pos = view->getCenter();
+    pos.x -= text_size * 0.5f;
+    pos.y -= text_size * 0.5f;
+
+    gameoverText.setPosition({pos.x, pos.y});
+
+    window->draw(gameoverText);
 }
 
 void Level::stop() {
@@ -269,7 +284,49 @@ void Level::stop() {
     delete this;
 }
 
+void Level::displayPlayerInfo() const {
+    if (player == nullptr)
+        return;
+
+    uint text_size = 100;
+
+    sf::Text healthText;
+
+    healthText.setFont(*(*fonts)["default_font"]);
+    healthText.setString(std::to_string(player->health));
+    healthText.setCharacterSize(text_size);
+    healthText.setFillColor(sf::Color::Red);
+    healthText.setStyle(sf::Text::Bold);
+
+    sf::Vector2f healthPos = view->getCenter();
+    healthPos.x -= view->getSize().x * 0.5f - playerHealthPos.x;
+    healthPos.y -= view->getSize().y * 0.5f - playerHealthPos.y;
+
+    healthText.setPosition({healthPos.x, healthPos.y});
+
+    window->draw(healthText);
+
+    sf::Text ammoText;
+
+    ammoText.setFont(*(*fonts)["default_font"]);
+    ammoText.setString(std::to_string(player->weapon->ammo));
+    ammoText.setCharacterSize(text_size);
+    ammoText.setFillColor(sf::Color::Yellow);
+    ammoText.setStyle(sf::Text::Bold);
+
+    sf::Vector2f ammoPos = view->getCenter();
+    ammoPos.x -= view->getSize().x * 0.5f - playerAmmoPos.x;
+    ammoPos.y -= view->getSize().y * 0.5f - playerAmmoPos.y;
+
+    ammoText.setPosition({ammoPos.x, ammoPos.y});
+
+    window->draw(ammoText);
+}
+
 void Level::displayEntityInfo(Entity* entity) const {
+    if (entity == player)
+        return;
+
     sf::Text healthText;
     uint text_size = 32;
     uint offset_x = 0;
@@ -306,4 +363,20 @@ void Level::checkDeaths() {
 void Level::deleteEntity(Entity* entity) const {
     entities->erase(find(entities->begin(), entities->end(), entity));
     delete entity;
+}
+
+sf::Vector2f Level::getMouseGlobalPosition() const {
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+    mousePos.x -= window->getSize().x * 0.5f;
+    mousePos.y -= window->getSize().y * 0.5f;
+    sf::Vector2f viewPos = view->getCenter();
+    sf::Vector2f pos(viewPos.x + mousePos.x, viewPos.y + mousePos.y);
+    return pos;
+}
+
+float Level::getMouseToEntityAngle(Entity* entity) const {
+    b2Vec2 entityPos = entity->body->GetPosition();
+    sf::Vector2f pos = getMouseGlobalPosition();
+    float angle = atan2(pos.y / zoom - entityPos.y, pos.x / zoom - entityPos.x) + 360 * DEGTORAD;
+    return angle;
 }

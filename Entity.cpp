@@ -19,7 +19,10 @@ void Entity::setWeapon(const Weapon& _weapon) {
 
 void Entity::update() {
     PhysicalObject::update();
-    animator->update({body->GetPosition().x, body->GetPosition().y}, shape->getSize(), body->GetAngle());
+    animator->update({body->GetPosition().x, body->GetPosition().y}, {size.x * zoom * 2.f, size.y * zoom * 2.f}, body->GetAngle());
+
+    if (weapon != nullptr)
+        weapon->weaponAnimator->update({body->GetPosition().x, body->GetPosition().y}, {150, 30}, weapon->angle);
 
     if (reloading && cannotShoot == 0) {
         weapon->ammo = weapon->capacity;
