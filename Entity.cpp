@@ -1,7 +1,8 @@
 #include "Entity.h"
 
-Entity::Entity(b2World& world, const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& _animator, const float& _jump_force, const float& _top_speed, const float& _acceleration, const float& _friction)
+Entity::Entity(b2World& world, const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& _animator, const uint& _health, const float& _jump_force, const float& _top_speed, const float& _acceleration, const float& _friction)
 : PhysicalObject(world, b2_dynamicBody, pos, size, _animator) {
+    health = _health;
     jump_force = _jump_force;
     top_speed = _top_speed;
     acceleration = _acceleration;
@@ -78,4 +79,8 @@ void Entity::moveLeft() {
 
 Entity::~Entity() {
     delete weapon;
+}
+
+void Entity::dealDamage(const uint& damage) {
+    health -= damage;
 }

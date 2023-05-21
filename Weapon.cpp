@@ -2,6 +2,7 @@
 
 Weapon::Weapon(
         float power,
+        uint damage,
         float reload,
         float rate,
         float accuracy,
@@ -12,6 +13,7 @@ Weapon::Weapon(
         const Animator& bulletAnimator
         ):
         power(power),
+        damage(damage),
         reload_time(reload),
         rate(rate),
         accuracy(accuracy),
@@ -19,10 +21,6 @@ Weapon::Weapon(
         bullet_size(bulletSize),
         capacity(capacity),
         ammo(capacity),
-        weaponAnimator(new Animator(weaponAnimator)),
-        bulletAnimator(new Animator(weaponAnimator))
+        weaponAnimator(weaponAnimator),
+        bulletAnimator(bulletAnimator)
         { }
-
-Weapon::~Weapon() {
-    delete weaponAnimator;
-}

@@ -3,11 +3,12 @@
 #include <vector>
 #include "Animator.h"
 #include "Weapon.h"
+#include "Constants.h"
 
 struct Pistol {
 
     constexpr static float power = 5;
-    constexpr static float damage = 1;
+    constexpr static uint damage = 1;
     constexpr static float reload = 100;
     constexpr static float rate = 10;
     constexpr static float accuracy = 0.8;

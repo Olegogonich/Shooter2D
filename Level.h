@@ -16,6 +16,7 @@ struct Level {
     const float camera_offset_y = -200;
 
     sf::View* view;
+    std::map<std::string, sf::Font*>* fonts;
     std::map<std::string, sf::Texture*>* textures;
     Player* player;
     std::vector<PhysicalObject*>* objects;
@@ -36,9 +37,9 @@ struct Level {
 
     Player* createPlayer(const sf::Vector2f&, const sf::Vector2f&, const Animator&, const Controls&);
 
-    Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const float&, const float&, const Animator&) const;
+    Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const uint&, const float&, const float&, const Animator&) const;
 
-    sf::Texture* loadTexture(const std::string&, const std::string&) const;
+    void displayEntityInfo(Entity*) const;
 
     Weapon getPistol() const;
 
@@ -52,9 +53,19 @@ struct Level {
 
     void start();
 
+    void stop();
+
+    void gameover();
+
     ~Level();
 
 private:
+    sf::Font* loadFont(const std::string&, const std::string&) const;
+
+    sf::Texture* loadTexture(const std::string&, const std::string&) const;
+
+    void loadDefaultFonts() const;
+
     void loadDefaultTextures() const;
 
     void movePlayerCamera() const;

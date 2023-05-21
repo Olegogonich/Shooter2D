@@ -39,21 +39,18 @@ int main() {
     Player* player = level->createPlayer({0, 0}, {1, 2}, Animator(), getDefaultControls());
     player->animator->createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
     player->animator->createAnimation("idle", {(*level->textures)["pistol_bullet_frame1_texture"]}, 1);
+    player->setWeapon(level->getPistol());
 
-    Animator staticTexture = Animator::newStaticTexture((*level->textures)["pistol_texture"]);
-    level->createStatic({-70, 25}, {200, 3}, staticTexture);
-    level->createStatic({30, 17}, {4, 4}, staticTexture);
-    level->createStatic({18, 18.5}, {1.2, 1}, staticTexture);
-    level->createStatic({24, 17.25}, {1.2, 1}, staticTexture);
-    level->createStatic({36, 20}, {1.2, 1}, staticTexture);
-    level->createStatic({42, 16.5}, {1.2, 1}, staticTexture);
-    level->createObject(b2_dynamicBody, {-10, 0}, {3, 3}, staticTexture);
-
-    level->player->setWeapon(level->getPistol());
+    Animator staticAnimator = Animator::newStaticTexture((*level->textures)["pistol_texture"]);
+    level->createStatic({-70, 25}, {200, 3}, staticAnimator);
+    level->createStatic({30, 17}, {4, 4}, staticAnimator);
+    level->createStatic({18, 18.5}, {1.2, 1}, staticAnimator);
+    level->createStatic({24, 17.25}, {1.2, 1}, staticAnimator);
+    level->createStatic({36, 20}, {1.2, 1}, staticAnimator);
+    level->createStatic({42, 16.5}, {1.2, 1}, staticAnimator);
+    level->createDynamic({-10, 0}, {3, 3}, staticAnimator);
 
     level->start();
-
-    delete level;
 
     return 0;
 }

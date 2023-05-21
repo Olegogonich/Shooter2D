@@ -17,7 +17,7 @@ struct Entity : PhysicalObject {
     float cannotShoot;
     Weapon* weapon;
 
-    Entity(b2World&, const sf::Vector2f&, const sf::Vector2f&, const Animator&, const float&, const float&, const float&, const float&);
+    Entity(b2World&, const sf::Vector2f&, const sf::Vector2f&, const Animator&, const uint&, const float&, const float&, const float&, const float&);
 
     void update() override;
 
@@ -36,6 +36,8 @@ struct Entity : PhysicalObject {
     void shoot();
 
     void reload();
+
+    void dealDamage(const uint&);
 
     ~Entity();
 };
