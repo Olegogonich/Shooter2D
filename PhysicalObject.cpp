@@ -41,7 +41,7 @@ PhysicalObject::PhysicalObject(b2World &world, const b2BodyType& type, sf::Vecto
 void PhysicalObject::update() {
     updateShapePosition();
     updateShapeRotation();
-    animator->update({body->GetPosition().x, body->GetPosition().y}, shape->getSize(), body->GetAngle());
+    animator->update({body->GetPosition().x, body->GetPosition().y}, {size.x * zoom * 2.f, size.y * zoom * 2.f}, body->GetAngle());
 }
 
 void PhysicalObject::updateShapePosition() const {

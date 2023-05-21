@@ -8,6 +8,6 @@ find_package(box2d REQUIRED)
 
 include_directories(resources/SFML/include resources/box2d-main/include/box2d)
 
-add_executable(Shooter2D main.cpp Level.cpp Level.h PhysicalObject.cpp PhysicalObject.h Player.cpp Player.h Animator.cpp Animator.h Animation.cpp Animation.h Controls.cpp Controls.h Constants.h Bullet.cpp Bullet.h Pistol.h Weapon.cpp Weapon.h Entity.cpp Entity.h)
+add_executable(Shooter2D main.cpp Level.cpp Level.h PhysicalObject.cpp PhysicalObject.h Player.cpp Player.h Animator.cpp Animator.h Animation.cpp Animation.h Controls.cpp Controls.h Constants.h Bullet.cpp Bullet.h Pistol.h Weapon.cpp Weapon.h Entity.cpp Entity.h Vfx.cpp Vfx.h)
 
 target_link_libraries(Shooter2D sfml-graphics sfml-audio box2d::box2d)

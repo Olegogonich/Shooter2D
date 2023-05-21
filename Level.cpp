@@ -91,9 +91,10 @@ void Level::checkShooting() const {
     }
 }
 
-void Level::update() const {
+void Level::update() {
     checkBullets();
     checkShooting();
+    checkDeaths();
     world->Step(0.1, 10, 10);
 }
 
@@ -185,6 +186,9 @@ bool Level::collide(PhysicalObject* obj1, PhysicalObject* obj2) {
 }
 
 void Level::movePlayerCamera() const {
+    if (player == nullptr)
+        return;
+
     b2Vec2 pos = player->body->GetPosition();
     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
     float x = ((mousePos.x - window->getSize().x * 0.5f) * h + pos.x * zoom - view->getCenter().x);
@@ -256,7 +260,7 @@ void Level::start() {
     }
 }
 
-void Level::gameover() {
+void Level::gameover() const {
 
 }
 
@@ -283,4 +287,23 @@ void Level::displayEntityInfo(Entity* entity) const {
     healthText.setPosition({pos.x, pos.y});
 
     window->draw(healthText);
+}
+
+void Level::checkDeaths() {
+    for (Entity* entity : *entities) {
+        if (!entity->isDead())
+            return;
+
+        if (entity == player) {
+            player = nullptr;
+            gameover();
+        }
+
+        deleteEntity(entity);
+    }
+}
+
+void Level::deleteEntity(Entity* entity) const {
+    entities->erase(find(entities->begin(), entities->end(), entity));
+    delete entity;
 }

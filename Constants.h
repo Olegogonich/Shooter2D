@@ -8,7 +8,7 @@ const float DEGTORAD = 0.0174532925199432957f;
 const float RADTODEG = 57.295779513082320876f;
 const uint quiting_time = 60;
 const uint bullet_lifetime = 100;
-const uint player_max_health = 100;
+const uint player_max_health = 1;
 const bool dynamic_bullets = true;
 
 const std::map<std::string, std::string> default_fonts {

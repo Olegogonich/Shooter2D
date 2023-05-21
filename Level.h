@@ -27,7 +27,7 @@ struct Level {
 
     Level(const b2Vec2&, sf::RenderWindow*);
 
-    void update() const;
+    void update();
 
     PhysicalObject* createObject(const b2BodyType&, const sf::Vector2f&, const sf::Vector2f&, const Animator&) const;
 
@@ -45,17 +45,21 @@ struct Level {
 
     void deleteBullet(Bullet*) const;
 
+    void deleteEntity(Entity*) const;
+
     static bool collide(PhysicalObject*, PhysicalObject*);
 
     void checkShooting() const;
 
     void checkBullets() const;
 
+    void checkDeaths();
+
     void start();
 
     void stop();
 
-    void gameover();
+    void gameover() const;
 
     ~Level();
 

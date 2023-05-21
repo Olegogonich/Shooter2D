@@ -84,3 +84,7 @@ Entity::~Entity() {
 void Entity::dealDamage(const uint& damage) {
     health -= damage;
 }
+
+bool Entity::isDead() const {
+    return health == 0;
+}

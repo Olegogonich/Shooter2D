@@ -39,5 +39,7 @@ struct Entity : PhysicalObject {
 
     void dealDamage(const uint&);
 
+    bool isDead() const;
+
     ~Entity();
 };
