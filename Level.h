@@ -15,6 +15,7 @@ struct Level {
     Player* player;
     std::vector<PhysicalObject*>* objects;
     std::vector<Bullet*>* bullets;
+    std::vector<Entity*>* entities;
     b2World* world;
     sf::RenderWindow* window;
 
@@ -42,7 +43,7 @@ struct Level {
 
     static bool collide(PhysicalObject*, PhysicalObject*);
 
-    void checkPlayerShooting() const;
+    void checkShooting() const;
 
     void checkBullets() const;
 

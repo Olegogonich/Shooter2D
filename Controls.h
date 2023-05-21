@@ -8,6 +8,7 @@ struct Controls {
     std::vector<sf::Keyboard::Key>* jumpKeys;
     std::vector<sf::Keyboard::Key>* rightKeys;
     std::vector<sf::Keyboard::Key>* leftKeys;
+    std::vector<sf::Keyboard::Key>* reloadKeys;
     sf::Mouse::Button shootButton;
 
     Controls();
@@ -20,6 +21,8 @@ struct Controls {
 
     void addLeftKey(sf::Keyboard::Key) const;
 
+    void addReloadKey(sf::Keyboard::Key) const;
+
     void setShootButton(sf::Mouse::Button);
 
     bool jumpPressed() const;
@@ -27,6 +30,8 @@ struct Controls {
     bool rightPressed() const;
 
     bool leftPressed() const;
+
+    bool reloadPressed() const;
 
     bool shootPressed() const;
 

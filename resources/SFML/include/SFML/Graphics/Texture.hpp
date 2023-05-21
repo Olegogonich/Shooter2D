@@ -426,7 +426,7 @@ public:
     /// it gets sampled. When the rendered image gets output to the final
     /// framebuffer, it gets converted back to sRGB.
     ///
-    /// After enabling or disabling sRGB conversion, make sure to reload
+    /// After enabling or disabling sRGB conversion, make sure to reload_time
     /// the texture data in order for the setting to take effect.
     ///
     /// This option is only useful in conjunction with an sRGB capable

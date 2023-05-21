@@ -3,12 +3,15 @@
 
 struct Weapon {
     float power;
-    float reload;
+    float reload_time;
     float rate;
     float accuracy;
     float recoil;
     float bullet_size;
     uint capacity;
+
+    uint ammo;
+
     Animator* weaponAnimator;
     Animator* bulletAnimator;
 

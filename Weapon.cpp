@@ -10,15 +10,15 @@ Weapon::Weapon(
         uint capacity,
         const Animator& weaponAnimator,
         const Animator& bulletAnimator
-        )
-        :
+        ):
         power(power),
-        reload(reload),
+        reload_time(reload),
         rate(rate),
         accuracy(accuracy),
         recoil(recoil),
         bullet_size(bulletSize),
         capacity(capacity),
+        ammo(capacity),
         weaponAnimator(new Animator(weaponAnimator)),
         bulletAnimator(new Animator(weaponAnimator))
         { }

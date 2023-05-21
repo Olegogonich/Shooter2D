@@ -3,6 +3,7 @@
 Level::Level(const b2Vec2& gravity, sf::RenderWindow *window) :
     textures(new std::map<std::string, sf::Texture*>()),
     objects(new std::vector<PhysicalObject*>()),
+    entities(new std::vector<Entity*>()),
     bullets(new std::vector<Bullet*>()),
     view(new sf::View(window->getDefaultView())),
     world(new b2World(gravity)),
@@ -24,6 +25,7 @@ PhysicalObject* Level::createObject(const b2BodyType& type, const sf::Vector2f& 
 Player* Level::createPlayer(const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& animator, const Controls& controls) {
     auto* object = new Player(*this->world, pos, size, animator, controls);
     objects->push_back(object);
+    entities->push_back(object);
     player = object;
     return object;
 }
@@ -60,43 +62,45 @@ sf::Texture* Level::loadTexture(const std::string& name, const std::string& path
     return texture;
 }
 
-void Level::checkPlayerShooting() const {
+void Level::checkShooting() const {
 
-    if (player->weapon == nullptr || !player->shoot())
-        return;
+    for (Entity* entity : *entities) {
+        if (!entity->shooting)
+            return;
 
-    sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
-    mousePos.x -= window->getSize().x * 0.5f;
-    mousePos.y -= window->getSize().y * 0.5f;
-    b2Vec2 playerPos = player->body->GetPosition();
-    sf::Vector2f viewPos = view->getCenter();
-    sf::Vector2f pos (viewPos.x + mousePos.x, viewPos.y + mousePos.y);
-    float angle = atan2(pos.y / zoom - playerPos.y, pos.x / zoom - playerPos.x) + 360 * DEGTORAD;
+        sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+        mousePos.x -= window->getSize().x * 0.5f;
+        mousePos.y -= window->getSize().y * 0.5f;
+        b2Vec2 entityPos = entity->body->GetPosition();
+        sf::Vector2f viewPos = view->getCenter();
+        sf::Vector2f pos(viewPos.x + mousePos.x, viewPos.y + mousePos.y);
+        float angle = atan2(pos.y / zoom - entityPos.y, pos.x / zoom - entityPos.x) + 360 * DEGTORAD;
 
-    Bullet* bullet = createBullet(
-        {
-             playerPos.x * antizoom,
-             playerPos.y * antizoom
-        },
-        {
-            player->weapon->bullet_size,
-            player->weapon->bullet_size
-        },
-        angle,
-        player->weapon->power,
-        *player->weapon->bulletAnimator
-    );
+        Bullet *bullet = createBullet(
+                {
+                        entityPos.x * antizoom,
+                        entityPos.y * antizoom
+                },
+                {
+                        entity->weapon->bullet_size,
+                        entity->weapon->bullet_size
+                },
+                angle,
+                entity->weapon->power,
+                *entity->weapon->bulletAnimator
+        );
 
-    b2Vec2 bulletPos;
-    while (Level::collide(bullet, player)) {
-        bulletPos = bullet->body->GetPosition();
-        bullet->body->SetTransform({bulletPos.x + cos(angle) * 0.01f, bulletPos.y + sin(angle) * 0.01f}, angle);
+        b2Vec2 bulletPos;
+        while (Level::collide(bullet, entity)) {
+            bulletPos = bullet->body->GetPosition();
+            bullet->body->SetTransform({bulletPos.x + cos(angle) * 0.005f, bulletPos.y + sin(angle) * 0.005f}, angle);
+        }
     }
 }
 
 void Level::update() const {
     checkBullets();
-    checkPlayerShooting();
+    checkShooting();
     world->Step(0.1, 10, 10);
 }
 
@@ -159,6 +163,7 @@ Level::~Level() {
     }
     delete textures;
     delete bullets;
+    delete entities;
     delete view;
     delete world;
     delete window;
@@ -172,7 +177,7 @@ bool Level::collide(PhysicalObject* obj1, PhysicalObject* obj2) {
     b2Vec2 pos2 = obj2->body->GetPosition();
     sf::Vector2f size2 = obj2->size;
 
-    float inaccuracy = 0.2;
+    float inaccuracy = 0.15;
 
     return abs(pos1.x - pos2.x) - inaccuracy < (size1.x + size2.x) && abs(pos1.y - pos2.y) - inaccuracy < (size1.y + size2.y);
 }

@@ -20,6 +20,8 @@ Controls getDefaultControls() {
     controls.addLeftKey(sf::Keyboard::Key::Left);
     controls.addLeftKey(sf::Keyboard::Key::A);
 
+    controls.addReloadKey(sf::Keyboard::Key::R);
+
     controls.setShootButton(sf::Mouse::Button::Left);
 
     return controls;
@@ -36,8 +38,6 @@ int main() {
     window->setFramerateLimit(60);
 
     auto* level = new Level(gravity, window);
-
-
 
     Player* player = level->createPlayer({0, 0}, {1, 2}, Animator(), getDefaultControls());
     player->animator->createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);

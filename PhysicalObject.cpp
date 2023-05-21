@@ -19,10 +19,13 @@ PhysicalObject::PhysicalObject(b2World& world, const b2BodyType& type, sf::Vecto
 
     b2FixtureDef boxFixtureDef;
     boxFixtureDef.shape = &boxShape;
-    boxFixtureDef.density = 0.1;
-//    boxFixtureDef.friction = 0;
+    boxFixtureDef.density = 1;
+
+    b2MassData massData;
+    massData.mass = size.x * size.y * 0.001f;
 
     body = world.CreateBody(&bodyDef);
+//    body->SetMassData(&massData);
     body->CreateFixture(&boxFixtureDef);
 
     shape->setFillColor(sf::Color::Black);
@@ -55,4 +58,3 @@ PhysicalObject::~PhysicalObject() {
     delete shape;
     delete animator;
 }
-
