@@ -5,11 +5,16 @@
 #include <box2d.h>
 #include "PhysicalObject.h"
 #include "Player.h"
-#include "StaticObject.h"
 #include "Pistol.h"
 #include "Bullet.h"
 
 struct Level {
+
+    const float n = 0.05;
+    const float h = 0.45;
+    const float r = 0.1;
+    const float camera_offset_y = -200;
+
     sf::View* view;
     std::map<std::string, sf::Texture*>* textures;
     Player* player;
@@ -25,13 +30,11 @@ struct Level {
 
     PhysicalObject* createObject(const b2BodyType&, const sf::Vector2f&, const sf::Vector2f&, const Animator&) const;
 
-    PhysicalObject* createObject(const b2BodyType&, const sf::Vector2f&, const sf::Vector2f&, sf::Texture*) const;
+    PhysicalObject* createStatic(const sf::Vector2f&, const sf::Vector2f&, const Animator&) const;
+
+    PhysicalObject* createDynamic(const sf::Vector2f&, const sf::Vector2f&, const Animator&) const;
 
     Player* createPlayer(const sf::Vector2f&, const sf::Vector2f&, const Animator&, const Controls&);
-
-    StaticObject* createStatic(const sf::Vector2f&, const sf::Vector2f&, sf::Texture*) const;
-
-    Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const float&, const float&, sf::Texture*) const;
 
     Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const float&, const float&, const Animator&) const;
 
@@ -47,8 +50,12 @@ struct Level {
 
     void checkBullets() const;
 
+    void start();
+
     ~Level();
 
 private:
     void loadDefaultTextures() const;
+
+    void movePlayerCamera() const;
 };

@@ -1,11 +1,8 @@
 #include <SFML/Graphics.hpp>
 #include <box2d.h>
 #include "Level.h"
-#include "renderer.h"
 #include "Animator.h"
 #include "Controls.h"
-#include "Weapon.h"
-#include "Pistol.h"
 
 Controls getDefaultControls() {
     Controls controls;
@@ -43,17 +40,18 @@ int main() {
     player->animator->createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
     player->animator->createAnimation("idle", {(*level->textures)["pistol_bullet_frame1_texture"]}, 1);
 
-    level->createStatic({-70, 25}, {200, 3}, (*level->textures)["pistol_texture"]);
-    level->createStatic({30, 17}, {4, 4}, (*level->textures)["pistol_texture"]);
-    level->createStatic({18, 18.5}, {1.2, 1}, (*level->textures)["pistol_texture"]);
-    level->createStatic({24, 17.25}, {1.2, 1}, (*level->textures)["pistol_texture"]);
-    level->createStatic({36, 20}, {1.2, 1}, (*level->textures)["pistol_texture"]);
-    level->createStatic({42, 16.5}, {1.2, 1}, (*level->textures)["pistol_texture"]);
-    level->createObject(b2_dynamicBody, {-10, 0}, {3, 3}, (*level->textures)["pistol_texture"]);
+    Animator staticTexture = Animator::newStaticTexture((*level->textures)["pistol_texture"]);
+    level->createStatic({-70, 25}, {200, 3}, staticTexture);
+    level->createStatic({30, 17}, {4, 4}, staticTexture);
+    level->createStatic({18, 18.5}, {1.2, 1}, staticTexture);
+    level->createStatic({24, 17.25}, {1.2, 1}, staticTexture);
+    level->createStatic({36, 20}, {1.2, 1}, staticTexture);
+    level->createStatic({42, 16.5}, {1.2, 1}, staticTexture);
+    level->createObject(b2_dynamicBody, {-10, 0}, {3, 3}, staticTexture);
 
     level->player->setWeapon(level->getPistol());
 
-    render(level);
+    level->start();
 
     delete level;
 

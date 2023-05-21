@@ -10,16 +10,18 @@ Level::Level(const b2Vec2& gravity, sf::RenderWindow *window) :
     window(window)
     { loadDefaultTextures(); }
 
-PhysicalObject* Level::createObject(const b2BodyType& type, const sf::Vector2f& pos, const sf::Vector2f& size, const Animator &animator) const {
+PhysicalObject* Level::createObject(const b2BodyType& type, const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& animator) const {
     auto* object = new PhysicalObject(*this->world, type, pos, size, animator);
     objects->push_back(object);
     return object;
 }
 
-PhysicalObject* Level::createObject(const b2BodyType& type, const sf::Vector2f& pos, const sf::Vector2f& size, sf::Texture* texture) const {
-    auto* object = new PhysicalObject(*this->world, type, pos, size, texture);
-    objects->push_back(object);
-    return object;
+PhysicalObject* Level::createStatic(const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& animator) const {
+    return createObject(b2_staticBody, pos, size, animator);
+}
+
+PhysicalObject* Level::createDynamic(const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& animator) const {
+    return createObject(b2_dynamicBody, pos, size, animator);
 }
 
 Player* Level::createPlayer(const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& animator, const Controls& controls) {
@@ -27,19 +29,6 @@ Player* Level::createPlayer(const sf::Vector2f& pos, const sf::Vector2f& size, c
     objects->push_back(object);
     entities->push_back(object);
     player = object;
-    return object;
-}
-
-StaticObject* Level::createStatic(const sf::Vector2f& pos, const sf::Vector2f& size, sf::Texture* texture) const {
-    auto* object = new StaticObject(*this->world, pos, size, texture);
-    objects->push_back(object);
-    return object;
-}
-
-Bullet* Level::createBullet(const sf::Vector2f& pos, const sf::Vector2f& size, const float& angle, const float& power, sf::Texture* texture) const {
-    auto* object = new Bullet(*this->world, pos, size, angle, power, texture);
-    objects->push_back(object);
-    bullets->push_back(object);
     return object;
 }
 
@@ -55,6 +44,7 @@ sf::Texture* Level::loadTexture(const std::string& name, const std::string& path
 
     if (!texture->loadFromFile(path)) {
         std::cout << "file not found" << '\n';
+        return nullptr;
     }
     texture->setSmooth(true);
     (*textures)[name] = texture;
@@ -142,13 +132,7 @@ Weapon Level::getPistol() const {
 
 void Level::loadDefaultTextures() const {
     for (const auto& name_path : default_textures) {
-        auto* texture = new sf::Texture();
-
-        if (!texture->loadFromFile(name_path.second)) {
-            std::cout << "Can't load file: \"" + name_path.second + "\"";
-            continue;
-        }
-
+        sf::Texture* texture = loadTexture(name_path.first, name_path.second);
         (*textures)[name_path.first] = texture;
     }
 }
@@ -182,3 +166,46 @@ bool Level::collide(PhysicalObject* obj1, PhysicalObject* obj2) {
     return abs(pos1.x - pos2.x) - inaccuracy < (size1.x + size2.x) && abs(pos1.y - pos2.y) - inaccuracy < (size1.y + size2.y);
 }
 
+void Level::movePlayerCamera() const {
+    b2Vec2 pos = player->body->GetPosition();
+    sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
+    float x = ((mousePos.x - window->getSize().x * 0.5f) * h + pos.x * zoom - view->getCenter().x);
+    float y = ((mousePos.y - window->getSize().y * 0.5f) * h + pos.y * zoom + camera_offset_y - view->getCenter().y);
+    view->move(pow(x * n * r, 3), y * n * 0.6);
+}
+
+void Level::start() {
+    uint quiting = 0;
+
+    while (window->isOpen())
+    {
+        sf::Event event{};
+        while (window->pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed || quiting >= quiting_time)
+                window->close();
+        }
+        window->clear(sf::Color::White);
+
+        for (PhysicalObject* object : *objects) {
+            object->update();
+            window->draw(*object->shape);
+            window->draw(*object->animator->sprite);
+        }
+
+        update();
+
+        window->setView(*view);
+
+        window->display();
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape))
+            quiting++;
+        else
+            quiting = 0;
+
+        std::cout << "quiting: " << quiting << '\r';
+
+        movePlayerCamera();
+    }
+}
