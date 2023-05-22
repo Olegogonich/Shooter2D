@@ -8,8 +8,9 @@ const float antizoom = 4.f;
 const float DEGTORAD = 0.0174532925199432957f;
 const float RADTODEG = 57.295779513082320876f;
 
-const sf::Vector2f playerHealthPos {10, 10};
-const sf::Vector2f playerAmmoPos {10, 120};
+const sf::Vector2u playerHealthPos {20, 50};
+const sf::Vector2u playerAmmoPos {20, 150};
+const uint playerInfoSize = 100;
 
 const uint quiting_time = 60;
 const uint bullet_lifetime = 100;

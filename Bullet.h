@@ -8,7 +8,7 @@ struct Bullet : PhysicalObject {
     uint damage;
     int lifetime;
 
-    Bullet(b2World&, const sf::Vector2f&, const sf::Vector2f&, const uint&, const float&, const float&, const Animator&);
+    Bullet(b2World&, const sf::Vector2f&, const sf::Vector2f&, const uint&, const float&, const float&, const float&, const Animator&);
 
     void update() override;
 };

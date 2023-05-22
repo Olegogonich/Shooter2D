@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Pistol.h"
 #include "Bullet.h"
+#include "Vfx.h"
 
 struct Level {
 
@@ -18,6 +19,7 @@ struct Level {
     sf::View* view;
     std::map<std::string, sf::Font*>* fonts;
     std::map<std::string, sf::Texture*>* textures;
+    std::vector<Vfx*>* effects;
     Player* player;
     std::vector<PhysicalObject*>* objects;
     std::vector<Bullet*>* bullets;
@@ -37,7 +39,7 @@ struct Level {
 
     Player* createPlayer(const sf::Vector2f&, const sf::Vector2f&, const Animator&, const Controls&);
 
-    Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const uint&, const float&, const float&, const Animator&) const;
+    Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const uint&, const float&, const float&, const float&, const Animator&) const;
 
     Weapon getPistol() const;
 
@@ -62,6 +64,18 @@ struct Level {
     ~Level();
 
 private:
+    void displayObjects() const;
+
+    void displayEntities() const;
+
+    void displayEffects() const;
+
+    void displayText(const std::string&, const sf::Vector2u&, const uint&, const sf::Color&) const;
+
+    void displayText(const std::string&, const sf::Vector2u&, const uint&, const sf::Color&, const sf::Color&, const float&) const;
+
+    void displayText(sf::Text, const sf::Vector2u& pos) const;
+
     sf::Font* loadFont(const std::string&, const std::string&) const;
 
     sf::Texture* loadTexture(const std::string&, const std::string&) const;

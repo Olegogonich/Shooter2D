@@ -22,7 +22,7 @@ void Entity::update() {
     animator->update({body->GetPosition().x, body->GetPosition().y}, {size.x * zoom * 2.f, size.y * zoom * 2.f}, body->GetAngle());
 
     if (weapon != nullptr)
-        weapon->weaponAnimator->update({body->GetPosition().x, body->GetPosition().y}, {150, 30}, weapon->angle);
+        weapon->weaponAnimator->update({body->GetPosition().x, body->GetPosition().y}, {1.f * zoom, 4.5f * zoom}, weapon->angle);
 
     if (reloading && cannotShoot == 0) {
         weapon->ammo = weapon->capacity;

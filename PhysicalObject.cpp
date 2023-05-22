@@ -21,11 +21,7 @@ PhysicalObject::PhysicalObject(b2World& world, const b2BodyType& type, sf::Vecto
     boxFixtureDef.shape = &boxShape;
     boxFixtureDef.density = 1;
 
-    b2MassData massData;
-    massData.mass = size.x * size.y * 0.001f;
-
     body = world.CreateBody(&bodyDef);
-//    body->SetMassData(&massData);
     body->CreateFixture(&boxFixtureDef);
 
     shape->setFillColor(sf::Color::Black);

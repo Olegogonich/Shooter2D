@@ -21,9 +21,6 @@ void Player::control() {
     bool shooted = controls->shootPressed();
     bool reloaded = controls->reloadPressed();
 
-    if (weapon != nullptr)
-        std::cout << " health: " << health << " shoot pressed: " <<  shooted << " ammo: " << weapon->ammo << " reloading: " << reloading << '\r';
-
     if (jumped) {
         jump();
     }

@@ -5,6 +5,7 @@ Level::Level(const b2Vec2& gravity, sf::RenderWindow *window) :
     textures(new std::map<std::string, sf::Texture*>()),
     objects(new std::vector<PhysicalObject*>()),
     entities(new std::vector<Entity*>()),
+    effects(new std::vector<Vfx*>()),
     bullets(new std::vector<Bullet*>()),
     view(new sf::View(window->getDefaultView())),
     world(new b2World(gravity)),
@@ -34,8 +35,8 @@ Player* Level::createPlayer(const sf::Vector2f& pos, const sf::Vector2f& size, c
     return object;
 }
 
-Bullet* Level::createBullet(const sf::Vector2f& pos, const sf::Vector2f& size, const uint& damage, const float& angle, const float& power, const Animator& animator) const {
-    auto* object = new Bullet(*this->world, pos, size, damage, angle, power, animator);
+Bullet* Level::createBullet(const sf::Vector2f& pos, const sf::Vector2f& size, const uint& damage, const float& angle, const float& power, const float& mass, const Animator& animator) const {
+    auto* object = new Bullet(*this->world, pos, size, damage, angle, power, mass, animator);
     objects->push_back(object);
     bullets->push_back(object);
     return object;
@@ -75,6 +76,7 @@ void Level::checkShooting() const {
                 entity->weapon->damage,
                 angle,
                 entity->weapon->power,
+                entity->weapon->bullet_mass,
                 entity->weapon->bulletAnimator
         );
 
@@ -129,7 +131,7 @@ void Level::checkBullets() const {
 }
 
 Weapon Level::getPistol() const {
-    Weapon weapon (Pistol::power, Pistol::damage, Pistol::reload, Pistol::rate, Pistol::accuracy, Pistol::recoil, Pistol::bullet_size, Pistol::capacity, Animator(), Animator());
+    Weapon weapon (Pistol::power, Pistol::bullet_mass, Pistol::damage, Pistol::reload, Pistol::rate, Pistol::accuracy, Pistol::recoil, Pistol::bullet_size, Pistol::capacity, Animator(), Animator());
     weapon.weaponAnimator->createAnimation("idle", {(*textures)["pistol_texture"]}, 10);
     weapon.bulletAnimator.createAnimation("flying", {(*textures)["pistol_bullet_frame1_texture"], (*textures)["pistol_bullet_frame2_texture"]}, 1);
     return weapon;
@@ -151,6 +153,10 @@ Level::~Level() {
         delete entity;
     }
     delete entities;
+    for (Vfx* vfx : *effects) {
+        delete vfx;
+    }
+    delete effects;
     for (const auto& texture : *textures) {
         delete texture.second;
     }
@@ -211,7 +217,9 @@ void Level::loadDefaultFonts() const {
 
 void Level::start() {
     uint quiting = 0;
-
+    uint quitingTextAlpha;
+//    float zoomt = 10;
+//    view->setSize({(float)window->getSize().x / zoomt, (float)window->getSize().y / zoomt});
     while (window->isOpen())
     {
         sf::Event event{};
@@ -224,24 +232,17 @@ void Level::start() {
         }
         window->clear(sf::Color::White);
 
-        for (PhysicalObject* object : *objects) {
-            object->update();
-            window->draw(*object->shape);
-            window->draw(*object->animator->sprite);
-        }
-        for (Entity* entity : *entities) {
-            if (entity == player)
-                entity->weapon->angle = getMouseToEntityAngle(entity);
-            entity->update();
-            window->draw(*entity->shape);
-            window->draw(*entity->animator->sprite);
-            window->draw(*entity->weapon->weaponAnimator->sprite);
-            displayEntityInfo(entity);
-        }
+        displayObjects();
+        displayEntities();
+        displayEffects();
+
         if (player == nullptr)
             gameover();
         else
             displayPlayerInfo();
+
+        quitingTextAlpha = 255.f / quiting_time * quiting;
+        displayText("quiting...", {0, (uint)view->getSize().y - 35}, 50, sf::Color(220, 220, 220, quitingTextAlpha), sf::Color(0, 0, 0, quitingTextAlpha), 1);
 
         update();
 
@@ -261,22 +262,11 @@ void Level::start() {
 }
 
 void Level::gameover() const {
-    sf::Text gameoverText;
-    uint text_size = 200;
-
-    gameoverText.setFont(*(*fonts)["default_font"]);
-    gameoverText.setString("Game Over");
-    gameoverText.setCharacterSize(text_size);
-    gameoverText.setFillColor(sf::Color::Black);
-    gameoverText.setStyle(sf::Text::Bold);
-
-    sf::Vector2f pos = view->getCenter();
-    pos.x -= text_size * 0.5f;
-    pos.y -= text_size * 0.5f;
-
-    gameoverText.setPosition({pos.x, pos.y});
-
-    window->draw(gameoverText);
+    uint size = 225;
+    sf::Vector2u pos = {0, 0};
+    sf::Color color(70, 70, 70);
+    sf::Color outline(80, 80, 80);
+    displayText("Game Over", pos, size, color, outline, 5);
 }
 
 void Level::stop() {
@@ -288,39 +278,13 @@ void Level::displayPlayerInfo() const {
     if (player == nullptr)
         return;
 
-    uint text_size = 100;
+    sf::Color health_color (255, 127, 127);
+    sf::Color health_outline_color (200, 100, 100);
+    displayText(std::to_string(player->health), playerHealthPos, playerInfoSize, health_color, health_outline_color, 3);
 
-    sf::Text healthText;
-
-    healthText.setFont(*(*fonts)["default_font"]);
-    healthText.setString(std::to_string(player->health));
-    healthText.setCharacterSize(text_size);
-    healthText.setFillColor(sf::Color::Red);
-    healthText.setStyle(sf::Text::Bold);
-
-    sf::Vector2f healthPos = view->getCenter();
-    healthPos.x -= view->getSize().x * 0.5f - playerHealthPos.x;
-    healthPos.y -= view->getSize().y * 0.5f - playerHealthPos.y;
-
-    healthText.setPosition({healthPos.x, healthPos.y});
-
-    window->draw(healthText);
-
-    sf::Text ammoText;
-
-    ammoText.setFont(*(*fonts)["default_font"]);
-    ammoText.setString(std::to_string(player->weapon->ammo));
-    ammoText.setCharacterSize(text_size);
-    ammoText.setFillColor(sf::Color::Yellow);
-    ammoText.setStyle(sf::Text::Bold);
-
-    sf::Vector2f ammoPos = view->getCenter();
-    ammoPos.x -= view->getSize().x * 0.5f - playerAmmoPos.x;
-    ammoPos.y -= view->getSize().y * 0.5f - playerAmmoPos.y;
-
-    ammoText.setPosition({ammoPos.x, ammoPos.y});
-
-    window->draw(ammoText);
+    sf::Color ammo_color (250, 250, 10);
+    sf::Color ammo_outline_color (205, 205, 100);
+    displayText(std::to_string(player->weapon->ammo), playerAmmoPos, playerInfoSize, ammo_color, ammo_outline_color, 3);
 }
 
 void Level::displayEntityInfo(Entity* entity) const {
@@ -335,7 +299,9 @@ void Level::displayEntityInfo(Entity* entity) const {
     healthText.setFont(*(*fonts)["default_font"]);
     healthText.setString(std::to_string(entity->health));
     healthText.setCharacterSize(text_size);
-    healthText.setFillColor(sf::Color::Red);
+    healthText.setFillColor(sf::Color(255, 127, 127));
+    healthText.setOutlineColor(sf::Color(200, 100, 100));
+    healthText.setOutlineThickness(2);
     healthText.setStyle(sf::Text::Bold);
 
     b2Vec2 pos = entity->body->GetPosition();
@@ -380,3 +346,65 @@ float Level::getMouseToEntityAngle(Entity* entity) const {
     float angle = atan2(pos.y / zoom - entityPos.y, pos.x / zoom - entityPos.x) + 360 * DEGTORAD;
     return angle;
 }
+
+void Level::displayText(const std::string &string, const sf::Vector2u &pos, const uint& size, const sf::Color &color) const {
+    sf::Text text;
+    text.setString(string);
+    text.setCharacterSize(size);
+    text.setFillColor(color);
+    displayText(text, pos);
+}
+
+void Level::displayText(const std::string &string, const sf::Vector2u &pos, const uint& size, const sf::Color &color, const sf::Color &outlineColor, const float& outlineThickness) const {
+    sf::Text text;
+    text.setString(string);
+    text.setCharacterSize(size);
+    text.setFillColor(color);
+    text.setOutlineColor(outlineColor);
+    text.setOutlineThickness(outlineThickness);
+    displayText(text, pos);
+}
+
+void Level::displayText(sf::Text text, const sf::Vector2u& pos) const {
+
+    text.setFont(*(*fonts)["default_font"]);
+
+    text.setStyle(sf::Text::Bold);
+
+    sf::Vector2f textPos = view->getCenter();
+    textPos.x -= view->getSize().x * 0.5f - pos.x;
+    textPos.y -= (view->getSize().y + text.getCharacterSize()) * 0.5f - pos.y;
+
+    text.setPosition({textPos.x, textPos.y});
+
+    window->draw(text);
+}
+
+void Level::displayObjects() const {
+    for (PhysicalObject* object : *objects) {
+        object->update();
+        window->draw(*object->shape);
+        window->draw(*object->animator->sprite);
+    }
+}
+
+void Level::displayEntities() const {
+    for (Entity* entity : *entities) {
+        if (entity == player)
+            entity->weapon->angle = getMouseToEntityAngle(entity);
+        entity->update();
+        window->draw(*entity->shape);
+        window->draw(*entity->animator->sprite);
+        window->draw(*entity->weapon->weaponAnimator->sprite);
+        displayEntityInfo(entity);
+    }
+}
+
+void Level::displayEffects() const {
+    for (Vfx* vfx : *effects) {
+        vfx->update();
+        window->draw(*vfx->animator->sprite);
+    }
+}
+
+

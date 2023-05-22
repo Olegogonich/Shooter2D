@@ -3,6 +3,7 @@
 
 struct Weapon {
     float power;
+    float bullet_mass;
     uint damage;
     float reload_time;
     float rate;
@@ -17,7 +18,7 @@ struct Weapon {
     Animator* weaponAnimator;
     Animator bulletAnimator;
 
-    Weapon(float, uint, float,float, float, float, float, uint, const Animator&, const Animator&);
+    Weapon(float, float, uint, float,float, float, float, float, uint, const Animator&, const Animator&);
 
     Weapon(const Weapon&);
 
