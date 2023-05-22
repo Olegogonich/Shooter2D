@@ -218,8 +218,6 @@ void Level::loadDefaultFonts() const {
 void Level::start() {
     uint quiting = 0;
     uint quitingTextAlpha;
-//    float zoomt = 10;
-//    view->setSize({(float)window->getSize().x / zoomt, (float)window->getSize().y / zoomt});
     while (window->isOpen())
     {
         sf::Event event{};
@@ -242,7 +240,7 @@ void Level::start() {
             displayPlayerInfo();
 
         quitingTextAlpha = 255.f / quiting_time * quiting;
-        displayText("quiting...", {0, (uint)view->getSize().y - 35}, 50, sf::Color(220, 220, 220, quitingTextAlpha), sf::Color(0, 0, 0, quitingTextAlpha), 1);
+        displayText("quiting...", {10, (uint)view->getSize().y - 35}, 50, sf::Color(220, 220, 220, quitingTextAlpha), sf::Color(0, 0, 0, quitingTextAlpha), 1);
 
         update();
 
@@ -403,8 +401,14 @@ void Level::displayEntities() const {
 void Level::displayEffects() const {
     for (Vfx* vfx : *effects) {
         vfx->update();
-        window->draw(*vfx->animator->sprite);
+        window->draw(*vfx->sprite);
     }
+}
+
+Vfx* Level::createVfx(const Animation &animation, const sf::Vector2f &pos, const sf::Vector2f &size, const float &angle, const bool &cycle, const bool &stopAtLast) const {
+    auto* vfx = new Vfx(animation, pos, size, angle, cycle, stopAtLast);
+    effects->push_back(vfx);
+    return vfx;
 }
 
 

@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(b2World& world, const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& _animator, const uint& _health, const float& _jump_force, const float& _top_speed, const float& _acceleration, const float& _friction)
+Entity::Entity(b2World& world, const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& _animator, const int& _health, const float& _jump_force, const float& _top_speed, const float& _acceleration, const float& _friction)
 : PhysicalObject(world, b2_dynamicBody, pos, size, _animator) {
     health = _health;
     jump_force = _jump_force;
@@ -22,7 +22,7 @@ void Entity::update() {
     animator->update({body->GetPosition().x, body->GetPosition().y}, {size.x * zoom * 2.f, size.y * zoom * 2.f}, body->GetAngle());
 
     if (weapon != nullptr)
-        weapon->weaponAnimator->update({body->GetPosition().x, body->GetPosition().y}, {1.f * zoom, 4.5f * zoom}, weapon->angle);
+        weapon->weaponAnimator->update({body->GetPosition().x, body->GetPosition().y}, {1.f * zoom, 0.45f * zoom}, weapon->angle);
 
     if (reloading && cannotShoot == 0) {
         weapon->ammo = weapon->capacity;
@@ -89,5 +89,5 @@ void Entity::dealDamage(const uint& damage) {
 }
 
 bool Entity::isDead() const {
-    return health == 0;
+    return health <= 0;
 }

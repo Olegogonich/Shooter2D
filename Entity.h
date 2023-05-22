@@ -12,12 +12,12 @@ struct Entity : PhysicalObject {
 
     bool shooting;
     bool reloading;
-    uint health;
+    int health;
 
     float cannotShoot;
     Weapon* weapon;
 
-    Entity(b2World&, const sf::Vector2f&, const sf::Vector2f&, const Animator&, const uint&, const float&, const float&, const float&, const float&);
+    Entity(b2World&, const sf::Vector2f&, const sf::Vector2f&, const Animator&, const int&, const float&, const float&, const float&, const float&);
 
     void update() override;
 

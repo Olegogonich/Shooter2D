@@ -41,6 +41,8 @@ struct Level {
 
     Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const uint&, const float&, const float&, const float&, const Animator&) const;
 
+    Vfx* createVfx(const Animation&, const sf::Vector2f&, const sf::Vector2f&, const float&, const bool&, const bool&) const;
+
     Weapon getPistol() const;
 
     void deleteBullet(Bullet*) const;

@@ -51,6 +51,9 @@ int main() {
     level->createStatic({42, 16.5}, {1.2, 1}, staticAnimator);
     level->createDynamic({-10, 0}, {3, 3}, staticAnimator);
 
+    Animation testAnimation ({(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 100);
+    level->createVfx(testAnimation, {0, 0}, {3, 3}, 0, false, true);
+
     level->start();
 
     return 0;
