@@ -7,7 +7,7 @@
 
 struct Pistol {
 
-    constexpr static float power = 5;
+    constexpr static float power = 15;
     constexpr static float bullet_mass = 0.03;
     constexpr static uint damage = 1;
     constexpr static float reload = 100;

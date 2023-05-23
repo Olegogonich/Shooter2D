@@ -59,7 +59,7 @@ void Level::checkShooting() const {
 
     for (Entity* entity : *entities) {
         if (!entity->shooting)
-            return;
+            continue;
 
         b2Vec2 entityPos = entity->body->GetPosition();
         float angle = getMouseToEntityAngle(entity);
@@ -92,6 +92,7 @@ void Level::update() {
     checkBullets();
     checkShooting();
     checkDeaths();
+    checkEffects();
     world->Step(0.1, 10, 10);
 }
 
@@ -313,7 +314,7 @@ void Level::displayEntityInfo(Entity* entity) const {
 void Level::checkDeaths() {
     for (Entity* entity : *entities) {
         if (!entity->isDead())
-            return;
+            continue;
 
         if (entity == player) {
             player = nullptr;
@@ -409,6 +410,20 @@ Vfx* Level::createVfx(const Animation &animation, const sf::Vector2f &pos, const
     auto* vfx = new Vfx(animation, pos, size, angle, cycle, stopAtLast);
     effects->push_back(vfx);
     return vfx;
+}
+
+void Level::deleteVfx(Vfx *vfx) const {
+    effects->erase(find(effects->begin(), effects->end(), vfx));
+    delete vfx;
+}
+
+void Level::checkEffects() {
+    for (Vfx *vfx : *effects) {
+        if (!vfx->played)
+            continue;
+
+        deleteVfx(vfx);
+    }
 }
 
 

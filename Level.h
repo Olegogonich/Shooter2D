@@ -49,13 +49,9 @@ struct Level {
 
     void deleteEntity(Entity*) const;
 
+    void deleteVfx(Vfx*) const;
+
     static bool collide(PhysicalObject*, PhysicalObject*);
-
-    void checkShooting() const;
-
-    void checkBullets() const;
-
-    void checkDeaths();
 
     void start();
 
@@ -95,4 +91,12 @@ private:
     sf::Vector2f getMouseGlobalPosition() const;
 
     float getMouseToEntityAngle(Entity*) const;
+
+    void checkShooting() const;
+
+    void checkBullets() const;
+
+    void checkDeaths();
+
+    void checkEffects();
 };
