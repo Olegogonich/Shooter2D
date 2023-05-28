@@ -5,6 +5,8 @@ Level::Level(const b2Vec2& gravity, sf::RenderWindow *window) :
     textures(new std::map<std::string, sf::Texture*>()),
     objects(new std::vector<PhysicalObject*>()),
     entities(new std::vector<Entity*>()),
+    players(new std::vector<Player*>()),
+    enemies(new std::vector<Enemy*>()),
     effects(new std::vector<Vfx*>()),
     bullets(new std::vector<Bullet*>()),
     view(new sf::View(window->getDefaultView())),
@@ -31,7 +33,8 @@ PhysicalObject* Level::createDynamic(const sf::Vector2f& pos, const sf::Vector2f
 Player* Level::createPlayer(const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& animator, const Controls& controls) {
     auto* object = new Player(*this->world, pos, size, animator, controls);
     entities->push_back(object);
-    player = object;
+    players->push_back(object);
+    currentPlayer = object;
     return object;
 }
 
@@ -62,7 +65,6 @@ void Level::checkShooting() const {
             continue;
 
         b2Vec2 entityPos = entity->body->GetPosition();
-        float angle = getMouseToEntityAngle(entity);
 
         Bullet *bullet = createBullet(
                 {
@@ -74,17 +76,19 @@ void Level::checkShooting() const {
                         entity->weapon->bullet_size
                 },
                 entity->weapon->damage,
-                angle,
+                entity->weapon->angle,
                 entity->weapon->power,
                 entity->weapon->bullet_mass,
                 entity->weapon->bulletAnimator
         );
 
-        b2Vec2 bulletPos;
-        while (Level::collide(bullet, entity)) {
-            bulletPos = bullet->body->GetPosition();
-            bullet->body->SetTransform({bulletPos.x + cos(angle) * 0.005f, bulletPos.y + sin(angle) * 0.005f}, angle);
-        }
+        bullet->setOwner(entity);
+
+        b2Vec2 pos = bullet->body->GetPosition();
+        pos.x += cos(bullet->angle) * 0.01;
+        pos.y += sin(bullet->angle) * 0.01;
+
+        bullet->body->SetTransform(pos, bullet->angle);
     }
 }
 
@@ -93,6 +97,7 @@ void Level::update() {
     checkShooting();
     checkDeaths();
     checkEffects();
+    tellEnemiesPlayerPositions();
     world->Step(0.1, 10, 10);
 }
 
@@ -111,12 +116,18 @@ void Level::checkBullets() const {
             continue;
         }
 
+        bool shouldBeDeleted = false;
         for (Entity* entity : *entities) {
             if (Level::collide(bullet, entity)) {
-                entity->dealDamage(bullet->damage);
-                deleteBullet(bullet);
-                break;
+                if (entity != bullet->owner)
+                    entity->dealDamage(bullet->damage);
+                shouldBeDeleted = true;
+                continue;
             }
+        }
+        if (shouldBeDeleted) {
+            deleteBullet(bullet);
+            continue;
         }
 
         for (PhysicalObject* object : *objects) {
@@ -124,6 +135,7 @@ void Level::checkBullets() const {
                 continue;
 
             if (Level::collide(bullet, object)) {
+                createVfx(*(*bullet->animator->animations)["flying"], bullet->position, {bullet->size.x * antizoom * 5, bullet->size.y * antizoom * 5}, bullet->angle, false, false);
                 deleteBullet(bullet);
                 break;
             }
@@ -132,7 +144,7 @@ void Level::checkBullets() const {
 }
 
 Weapon Level::getPistol() const {
-    Weapon weapon (Pistol::power, Pistol::bullet_mass, Pistol::damage, Pistol::reload, Pistol::rate, Pistol::accuracy, Pistol::recoil, Pistol::bullet_size, Pistol::capacity, Animator(), Animator());
+    Weapon weapon (Pistol::power, Pistol::bullet_mass, Pistol::damage, Pistol::reload, Pistol::rate, Pistol::stability, Pistol::recoil, Pistol::max_recoil, Pistol::bullet_size, Pistol::capacity, Animator(), Animator());
     weapon.weaponAnimator->createAnimation("idle", {(*textures)["pistol_texture"]}, 10);
     weapon.bulletAnimator.createAnimation("flying", {(*textures)["pistol_bullet_frame1_texture"], (*textures)["pistol_bullet_frame2_texture"]}, 1);
     return weapon;
@@ -150,10 +162,13 @@ Level::~Level() {
         delete object;
     }
     delete objects;
+    delete bullets;
     for (Entity* entity : *entities) {
         delete entity;
     }
     delete entities;
+    delete players;
+    delete enemies;
     for (Vfx* vfx : *effects) {
         delete vfx;
     }
@@ -166,7 +181,6 @@ Level::~Level() {
         delete font.second;
     }
     delete fonts;
-    delete bullets;
     delete view;
     delete world;
     delete window;
@@ -174,22 +188,22 @@ Level::~Level() {
 
 bool Level::collide(PhysicalObject* obj1, PhysicalObject* obj2) {
 
-    b2Vec2 pos1 = obj1->body->GetPosition();
+    sf::Vector2f pos1 = obj1->position;
     sf::Vector2f size1 = obj1->size;
 
-    b2Vec2 pos2 = obj2->body->GetPosition();
+    sf::Vector2f pos2 = obj2->position;
     sf::Vector2f size2 = obj2->size;
 
-    float inaccuracy = 0.15;
+    float inaccuracy = 0.2;
 
-    return abs(pos1.x - pos2.x) - inaccuracy < (size1.x + size2.x) && abs(pos1.y - pos2.y) - inaccuracy < (size1.y + size2.y);
+    return abs(pos1.x - pos2.x) - inaccuracy <= (size1.x + size2.x) && abs(pos1.y - pos2.y) - inaccuracy <= (size1.y + size2.y);
 }
 
 void Level::movePlayerCamera() const {
-    if (player == nullptr)
+    if (currentPlayer == nullptr)
         return;
 
-    b2Vec2 pos = player->body->GetPosition();
+    b2Vec2 pos = currentPlayer->body->GetPosition();
     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
     float x = ((mousePos.x - window->getSize().x * 0.5f) * h + pos.x * zoom - view->getCenter().x);
     float y = ((mousePos.y - window->getSize().y * 0.5f) * h + pos.y * zoom + camera_offset_y - view->getCenter().y);
@@ -232,13 +246,15 @@ void Level::start() {
         window->clear(sf::Color::White);
 
         displayObjects();
-        displayEntities();
         displayEffects();
+        displayEntities();
 
-        if (player == nullptr)
+        if (currentPlayer == nullptr) {
             gameover();
-        else
+        } else {
+            aimCurrentPlayer();
             displayPlayerInfo();
+        }
 
         quitingTextAlpha = 255.f / quiting_time * quiting;
         displayText("quiting...", {10, (uint)view->getSize().y - 35}, 50, sf::Color(220, 220, 220, quitingTextAlpha), sf::Color(0, 0, 0, quitingTextAlpha), 1);
@@ -269,30 +285,29 @@ void Level::gameover() const {
 }
 
 void Level::stop() {
-    window->close();
     delete this;
 }
 
 void Level::displayPlayerInfo() const {
-    if (player == nullptr)
+    if (currentPlayer == nullptr)
         return;
 
     sf::Color health_color (255, 127, 127);
     sf::Color health_outline_color (200, 100, 100);
-    displayText(std::to_string(player->health), playerHealthPos, playerInfoSize, health_color, health_outline_color, 3);
+    displayText(std::to_string(currentPlayer->health), playerHealthPos, playerInfoSize, health_color, health_outline_color, 3);
 
     sf::Color ammo_color (250, 250, 10);
     sf::Color ammo_outline_color (205, 205, 100);
-    displayText(std::to_string(player->weapon->ammo), playerAmmoPos, playerInfoSize, ammo_color, ammo_outline_color, 3);
+    std::string ammoText = currentPlayer->reloading > 0 ? "reloading" : std::to_string(currentPlayer->weapon->ammo);
+    displayText(ammoText, playerAmmoPos, playerInfoSize, ammo_color, ammo_outline_color, 3);
 }
 
 void Level::displayEntityInfo(Entity* entity) const {
-    if (entity == player)
+    if (entity == currentPlayer)
         return;
 
     sf::Text healthText;
     uint text_size = 32;
-    uint offset_x = 0;
     uint offset_y = 3;
 
     healthText.setFont(*(*fonts)["default_font"]);
@@ -304,7 +319,7 @@ void Level::displayEntityInfo(Entity* entity) const {
     healthText.setStyle(sf::Text::Bold);
 
     b2Vec2 pos = entity->body->GetPosition();
-    pos.x = pos.x * zoom - entity->size.x * zoom * 0.5f - offset_x;
+    pos.x = pos.x * zoom - text_size * 0.5f;
     pos.y = pos.y * zoom - entity->size.y * zoom - text_size - offset_y;
     healthText.setPosition({pos.x, pos.y});
 
@@ -312,21 +327,41 @@ void Level::displayEntityInfo(Entity* entity) const {
 }
 
 void Level::checkDeaths() {
-    for (Entity* entity : *entities) {
+    for (Player* entity : *players) {
         if (!entity->isDead())
             continue;
 
-        if (entity == player) {
-            player = nullptr;
+        if (entity == currentPlayer) {
+            currentPlayer = nullptr;
             gameover();
         }
 
-        deleteEntity(entity);
+        createVfx(*(*entity->animator->animations)["dead"], entity->position, {entity->size.x * antizoom, entity->size.y * antizoom}, 0, false, false);
+        deletePlayer(entity);
+    }
+    for (Enemy* entity : *enemies) {
+        if (!entity->isDead())
+            continue;
+
+        createVfx(*(*entity->animator->animations)["dead"], entity->position, {entity->size.x * antizoom, entity->size.y * antizoom}, 0, false, false);
+        deleteEnemy(entity);
     }
 }
 
 void Level::deleteEntity(Entity* entity) const {
     entities->erase(find(entities->begin(), entities->end(), entity));
+    delete entity;
+}
+
+void Level::deletePlayer(Player* entity) const {
+    entities->erase(find(entities->begin(), entities->end(), entity));
+    players->erase(find(players->begin(), players->end(), entity));
+    delete entity;
+}
+
+void Level::deleteEnemy(Enemy* entity) const {
+    entities->erase(find(entities->begin(), entities->end(), entity));
+    enemies->erase(find(enemies->begin(), enemies->end(), entity));
     delete entity;
 }
 
@@ -389,8 +424,6 @@ void Level::displayObjects() const {
 
 void Level::displayEntities() const {
     for (Entity* entity : *entities) {
-        if (entity == player)
-            entity->weapon->angle = getMouseToEntityAngle(entity);
         entity->update();
         window->draw(*entity->shape);
         window->draw(*entity->animator->sprite);
@@ -417,7 +450,7 @@ void Level::deleteVfx(Vfx *vfx) const {
     delete vfx;
 }
 
-void Level::checkEffects() {
+void Level::checkEffects() const {
     for (Vfx *vfx : *effects) {
         if (!vfx->played)
             continue;
@@ -426,4 +459,38 @@ void Level::checkEffects() {
     }
 }
 
+Enemy* Level::createEnemy(const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& animator) const {
+    auto* object = new Enemy(*this->world, pos, size, animator);
+    entities->push_back(object);
+    enemies->push_back(object);
+    return object;
+}
 
+void Level::tellEnemiesPlayerPositions() const {
+    for (Enemy* enemy : *enemies) {
+        if (players->empty()) {
+            enemy->resetTarget();
+            continue;
+        }
+
+        Entity* closest = players->at(0);
+        b2Vec2 min_dist = enemy->body->GetPosition() - closest->body->GetPosition();
+
+        for (Entity* player : *players) {
+            b2Vec2 dist = enemy->body->GetPosition() - player->body->GetPosition();
+            if (dist.x * dist.x + dist.y * dist.y < min_dist.x * min_dist.x + min_dist.y * min_dist.y) {
+                closest = player;
+                min_dist = dist;
+            }
+        }
+
+        if (min_dist.x * min_dist.x + min_dist.y * min_dist.y <= enemy->attack_radius)
+            enemy->setTarget(closest);
+        else
+            enemy->resetTarget();
+    }
+}
+
+void Level::aimCurrentPlayer() {
+    currentPlayer->aimingAngle = getMouseToEntityAngle(currentPlayer) - 360 * DEGTORAD;
+}

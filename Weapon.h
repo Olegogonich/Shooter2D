@@ -7,8 +7,10 @@ struct Weapon {
     uint damage;
     float reload_time;
     float rate;
-    float accuracy;
+    float stability;
     float recoil;
+    float current_recoil;
+    float max_recoil;
     float bullet_size;
     uint capacity;
     float angle;
@@ -18,7 +20,7 @@ struct Weapon {
     Animator* weaponAnimator;
     Animator bulletAnimator;
 
-    Weapon(float, float, uint, float,float, float, float, float, uint, const Animator&, const Animator&);
+    Weapon(float, float, uint, float, float, float, float, float, float, uint, const Animator&, const Animator&);
 
     Weapon(const Weapon&);
 

@@ -21,9 +21,9 @@ void Player::control() {
     bool shooted = controls->shootPressed();
     bool reloaded = controls->reloadPressed();
 
-    if (jumped) {
+    if (jumped)
         jump();
-    }
+
     if (movedRight) {
         moveRight();
         animator->currentAnimation = "running";
@@ -33,20 +33,16 @@ void Player::control() {
         animator->currentAnimation = "running";
     }
 
-    if (!movedRight && !movedLeft) {
+    if (!movedRight && !movedLeft)
         stop();
-    }
 
-    if (shooted) {
+    if (shooted)
         shoot();
-    }
 
-    if (reloaded) {
+    if (reloaded)
         reload();
-    }
 }
 
 Player::~Player() {
     delete controls;
-    delete weapon;
 }

@@ -30,5 +30,5 @@ sf::Texture* Animation::getCurrentTexture() const {
 
 Animation::~Animation() {
 
-//    delete textures;
+    delete textures;
 }

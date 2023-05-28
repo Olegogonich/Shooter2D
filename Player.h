@@ -9,10 +9,9 @@
 #define JUMP_FORCE 2.5f
 #define TOP_SPEED 1.0f
 #define ACCELERATION 0.3f
-#define FRICTION 0.6
+#define FRICTION 0.6f
 
 struct Player : Entity {
-
 
     Controls* controls;
 

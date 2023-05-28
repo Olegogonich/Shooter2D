@@ -11,25 +11,43 @@ Entity::Entity(b2World& world, const sf::Vector2f& pos, const sf::Vector2f& size
     shooting = false;
     reloading = false;
     body->SetFixedRotation(true);
+    weapon = nullptr;
 }
 
 void Entity::setWeapon(const Weapon& _weapon) {
+    delete weapon;
     weapon = new Weapon(_weapon);
 }
 
 void Entity::update() {
     PhysicalObject::update();
+
     animator->update({body->GetPosition().x, body->GetPosition().y}, {size.x * zoom * 2.f, size.y * zoom * 2.f}, body->GetAngle());
 
-    if (weapon != nullptr)
-        weapon->weaponAnimator->update({body->GetPosition().x, body->GetPosition().y}, {1.f * zoom, 0.45f * zoom}, weapon->angle);
+    if (weapon == nullptr)
+        return;
 
+    weapon->angle = aimingAngle;
+
+    if (weapon->angle > -90 * DEGTORAD && weapon->angle < 90 * DEGTORAD) {
+        weapon->angle -= weapon->current_recoil * DEGTORAD;
+    } else {
+        weapon->angle += weapon->current_recoil * DEGTORAD;
+    }
+
+    weapon->weaponAnimator->update({body->GetPosition().x, body->GetPosition().y}, {1.f * zoom, 0.45f * zoom}, weapon->angle);
+
+    updateShooting();
+}
+
+void Entity::updateShooting() {
     if (reloading && cannotShoot == 0) {
         weapon->ammo = weapon->capacity;
         reloading = false;
     }
     shooting = false;
 
+    weapon->current_recoil *= 1 - weapon->stability;
     cannotShoot -= cannotShoot > 0 ? 1 : 0;
 }
 
@@ -38,9 +56,13 @@ bool Entity::isOnFloor() const {
 }
 
 void Entity::shoot() {
-
     if (weapon == nullptr || weapon->ammo <= 0 || cannotShoot != 0)
         return;
+
+    weapon->current_recoil += weapon->recoil;
+
+    if(weapon->current_recoil > weapon->max_recoil)
+        weapon->current_recoil = weapon->max_recoil;
 
     weapon->ammo--;
     cannotShoot = weapon->rate;
@@ -65,7 +87,7 @@ void Entity::stop() {
 
 void Entity::jump()  {
     float impulse = body->GetMass() * -jump_force;
-    body->ApplyLinearImpulse({0.f, impulse}, body->GetWorldCenter(), true);
+    body->ApplyLinearImpulseToCenter({0, impulse}, true);
 }
 
 void Entity::moveRight() {
@@ -80,14 +102,14 @@ void Entity::moveLeft() {
     body->SetLinearVelocity(vel);
 }
 
-Entity::~Entity() {
-    delete weapon;
-}
-
 void Entity::dealDamage(const uint& damage) {
     health -= damage;
 }
 
 bool Entity::isDead() const {
     return health <= 0;
+}
+
+Entity::~Entity() {
+    delete weapon;
 }

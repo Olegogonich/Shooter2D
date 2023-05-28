@@ -10,6 +10,7 @@ struct PhysicalObject {
     Animator* animator;
     sf::RectangleShape* shape;
     b2Body* body;
+    sf::Vector2f position;
     sf::Vector2f size;
 
     PhysicalObject(b2World&, const b2BodyType&, sf::Vector2f, sf::Vector2f, const Animator&);

@@ -4,7 +4,7 @@
 #include "Animator.h"
 #include "Controls.h"
 
-Controls getDefaultControls() {
+ Controls getDefaultControls() {
     Controls controls;
 
     controls.addJumpKey(sf::Keyboard::Key::Space);
@@ -26,7 +26,6 @@ Controls getDefaultControls() {
 
 int main() {
 
-    const b2Vec2 gravity(0.0f, 2.f);
     const sf::Vector2u screen_size {1600, 1000};
 
     auto* window = new sf::RenderWindow();
@@ -37,10 +36,16 @@ int main() {
     auto* level = new Level(gravity, window);
 
     Player* player = level->createPlayer({0, 0}, {1, 2}, Animator(), getDefaultControls());
-    player->animator->createAnimation("dead", {(*level->textures)["pistol_texture"]}, 1);
+    player->animator->createAnimation("dead", {(*level->textures)["pistol_texture"]}, 100);
     player->animator->createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
     player->animator->createAnimation("idle", {(*level->textures)["pistol_bullet_frame1_texture"]}, 1);
     player->setWeapon(level->getPistol());
+
+    Enemy* enemy = level->createEnemy({10, -10}, {1, 2}, Animator());
+    enemy->animator->createAnimation("dead", {(*level->textures)["pistol_texture"]}, 100);
+    enemy->animator->createAnimation("running", {(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 10);
+    enemy->animator->createAnimation("idle", {(*level->textures)["pistol_bullet_frame1_texture"]}, 1);
+    enemy->setWeapon(level->getPistol());
 
     Animator staticAnimator = Animator::newStaticTexture((*level->textures)["pistol_texture"]);
     level->createStatic({-70, 25}, {200, 3}, staticAnimator);
@@ -49,10 +54,8 @@ int main() {
     level->createStatic({24, 17.25}, {1.2, 1}, staticAnimator);
     level->createStatic({36, 20}, {1.2, 1}, staticAnimator);
     level->createStatic({42, 16.5}, {1.2, 1}, staticAnimator);
+    level->createStatic({10, 14}, {3, 1}, staticAnimator);
     level->createDynamic({-10, 0}, {3, 3}, staticAnimator);
-
-    Animation testAnimation ({(*level->textures)["pistol_bullet_frame1_texture"], (*level->textures)["pistol_bullet_frame2_texture"]}, 100);
-    level->createVfx(testAnimation, {0, 0}, {3, 3}, 0, false, false);
 
     level->start();
 

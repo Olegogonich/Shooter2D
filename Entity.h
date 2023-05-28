@@ -15,11 +15,14 @@ struct Entity : PhysicalObject {
     int health;
 
     float cannotShoot;
+    float aimingAngle;
     Weapon* weapon;
 
     Entity(b2World&, const sf::Vector2f&, const sf::Vector2f&, const Animator&, const int&, const float&, const float&, const float&, const float&);
 
     void update() override;
+
+    void updateShooting();
 
     void setWeapon(const Weapon&);
 

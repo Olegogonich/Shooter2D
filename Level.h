@@ -5,6 +5,7 @@
 #include <box2d.h>
 #include "PhysicalObject.h"
 #include "Player.h"
+#include "Enemy.h"
 #include "Pistol.h"
 #include "Bullet.h"
 #include "Vfx.h"
@@ -20,10 +21,12 @@ struct Level {
     std::map<std::string, sf::Font*>* fonts;
     std::map<std::string, sf::Texture*>* textures;
     std::vector<Vfx*>* effects;
-    Player* player;
+    Player* currentPlayer;
     std::vector<PhysicalObject*>* objects;
     std::vector<Bullet*>* bullets;
     std::vector<Entity*>* entities;
+    std::vector<Player*>* players;
+    std::vector<Enemy*>* enemies;
     b2World* world;
     sf::RenderWindow* window;
 
@@ -39,6 +42,8 @@ struct Level {
 
     Player* createPlayer(const sf::Vector2f&, const sf::Vector2f&, const Animator&, const Controls&);
 
+    Enemy* createEnemy(const sf::Vector2f &, const sf::Vector2f &, const Animator &) const;
+
     Bullet* createBullet(const sf::Vector2f&, const sf::Vector2f&, const uint&, const float&, const float&, const float&, const Animator&) const;
 
     Vfx* createVfx(const Animation&, const sf::Vector2f&, const sf::Vector2f&, const float&, const bool&, const bool&) const;
@@ -49,9 +54,11 @@ struct Level {
 
     void deleteEntity(Entity*) const;
 
-    void deleteVfx(Vfx*) const;
+    void deletePlayer(Player*) const;
 
-    static bool collide(PhysicalObject*, PhysicalObject*);
+    void deleteEnemy(Enemy*) const;
+
+    void deleteVfx(Vfx*) const;
 
     void start();
 
@@ -59,9 +66,16 @@ struct Level {
 
     void gameover() const;
 
+    sf::Font* loadFont(const std::string&, const std::string&) const;
+
+    sf::Texture* loadTexture(const std::string&, const std::string&) const;
+
     ~Level();
 
 private:
+
+    static bool collide(PhysicalObject*, PhysicalObject*);
+
     void displayObjects() const;
 
     void displayEntities() const;
@@ -73,10 +87,6 @@ private:
     void displayText(const std::string&, const sf::Vector2u&, const uint&, const sf::Color&, const sf::Color&, const float&) const;
 
     void displayText(sf::Text, const sf::Vector2u& pos) const;
-
-    sf::Font* loadFont(const std::string&, const std::string&) const;
-
-    sf::Texture* loadTexture(const std::string&, const std::string&) const;
 
     void loadDefaultFonts() const;
 
@@ -98,5 +108,9 @@ private:
 
     void checkDeaths();
 
-    void checkEffects();
+    void checkEffects() const;
+
+    void tellEnemiesPlayerPositions() const;
+
+    void aimCurrentPlayer();
 };

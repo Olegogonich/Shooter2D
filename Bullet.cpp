@@ -5,7 +5,7 @@ Bullet::Bullet(b2World& world, const sf::Vector2f &pos, const sf::Vector2f &size
     damage = _damage;
     angle = _angle;
     power = _power;
-    b2MassData massData;
+    b2MassData massData = body->GetMassData();
     massData.mass = bulletMass;
     lifetime = bullet_lifetime;
     body->SetBullet(true);
@@ -13,6 +13,7 @@ Bullet::Bullet(b2World& world, const sf::Vector2f &pos, const sf::Vector2f &size
     body->SetMassData(&massData);
     body->SetTransform({pos.x / antizoom, pos.y / antizoom}, angle);
     body->SetLinearVelocity({cos(angle) * power, sin(angle) * power});
+    owner = nullptr;
 }
 
 void Bullet::update() {
@@ -21,3 +22,12 @@ void Bullet::update() {
     lifetime--;
 }
 
+void Bullet::setOwner(Entity* _owner) {
+    owner = _owner;
+}
+
+void Bullet::resetOwner() {
+    owner = nullptr;
+}
+
+Bullet::~Bullet() = default;
