@@ -1,4 +1,4 @@
 animations:
 idle:
-player_texture
+plain
 frames_till_next = 5

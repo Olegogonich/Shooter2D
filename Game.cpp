@@ -104,7 +104,12 @@ Level* Game::loadLevel(const std::string &path) {
     return level;
 }
 
+
 void Game::startLevel(Level *level) {
+
+    for (const auto& t : *level->textures) {
+        std::cout << t.first << '\n';
+    }
 
     level->start();
 }
@@ -217,7 +222,6 @@ void Game::createObjectDefaultAnimations(Level* level, PhysicalObject* object, c
         uint frames_till_next = std::stoul(buffer.substr(19));
         object->animator->createAnimation(name, textures, frames_till_next);
     }
-    object->animator->setFixedSize(true);
 }
 
 void Game::createEntityDefaultAnimations(Level* level, Entity* entity, const std::string& path) {
@@ -237,7 +241,6 @@ void Game::createEntityDefaultAnimations(Level* level, Entity* entity, const std
         uint frames_till_next = std::stoul(buffer.substr(19));
         entity->animator->createAnimation(name, textures, frames_till_next);
     }
-    entity->animator->setFixedSize(true);
     // change
     entity->setWeapon(level->getPistol());
 }

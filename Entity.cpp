@@ -31,9 +31,13 @@ void Entity::update() {
 
     if (weapon->angle > -90 * DEGTORAD && weapon->angle < 90 * DEGTORAD) {
         weapon->angle -= weapon->current_recoil * DEGTORAD;
+        weapon->weaponAnimator->currentAnimation = "idle";
     } else {
         weapon->angle += weapon->current_recoil * DEGTORAD;
+        weapon->weaponAnimator->currentAnimation = "idle_bottom";
     }
+    if (shooting)
+        weapon->weaponAnimator->currentAnimation = (weapon->angle > -90 * DEGTORAD && weapon->angle < 90 * DEGTORAD) ? "firing" : "firing_bottom";
 
     weapon->weaponAnimator->update({body->GetPosition().x, body->GetPosition().y}, {1.f * zoom, 0.45f * zoom}, weapon->angle);
 

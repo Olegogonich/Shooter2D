@@ -1,8 +1,18 @@
 textures:
-pistol_texture = /Users/oleh/CLionProjects/Shooter2D/resources/images/pic.jpg
-pistol_bullet_frame1_texture = /Users/oleh/CLionProjects/Shooter2D/resources/images/man0.png
-pistol_bullet_frame2_texture = /Users/oleh/CLionProjects/Shooter2D/resources/images/man1.png
-player_texture = /Users/oleh/CLionProjects/Shooter2D/resources/images/pic.jpg
+weapon_idle = /Users/oleh/CLionProjects/Shooter2D/resources/images/weapon_idle.png
+weapon_firing1 = /Users/oleh/CLionProjects/Shooter2D/resources/images/weapon_firing1.png
+weapon_firing2 = /Users/oleh/CLionProjects/Shooter2D/resources/images/weapon_firing2.png
+robot_idle1 = /Users/oleh/CLionProjects/Shooter2D/resources/images/robot_idle1.png
+robot_idle2 = /Users/oleh/CLionProjects/Shooter2D/resources/images/robot_idle2.png
+robot_idle3 = /Users/oleh/CLionProjects/Shooter2D/resources/images/robot_idle3.png
+robot_idle4 = /Users/oleh/CLionProjects/Shooter2D/resources/images/robot_idle4.png
+robot_idle5 = /Users/oleh/CLionProjects/Shooter2D/resources/images/robot_idle5.png
+robot_idle6 = /Users/oleh/CLionProjects/Shooter2D/resources/images/robot_idle6.png
+spark1 = /Users/oleh/CLionProjects/Shooter2D/resources/images/spark1.png
+spark2 = /Users/oleh/CLionProjects/Shooter2D/resources/images/spark2.png
+spark3 = /Users/oleh/CLionProjects/Shooter2D/resources/images/spark2.png
+plain = /Users/oleh/CLionProjects/Shooter2D/resources/images/plain_texture.png
+bullet = /Users/oleh/CLionProjects/Shooter2D/resources/images/bullet_texture.png
 
 fonts:
 default_font = /Users/oleh/CLionProjects/Shooter2D/resources/fonts/square-deal.ttf
@@ -25,4 +35,4 @@ animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_bloc
 static:
 pos: 0, 20
 size: 100, 2
-texture: pistol_texture
+texture: plain

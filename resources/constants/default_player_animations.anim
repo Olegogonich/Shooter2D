@@ -1,15 +1,18 @@
 animations:
 dead:
-pistol_texture
+robot_idle1
 frames_till_next = 5
 idle:
-player_texture
-frames_till_next = 5
+robot_idle1
+robot_idle2
+robot_idle3
+robot_idle4
+robot_idle5
+robot_idle6
+frames_till_next = 10
 running_right:
-pistol_bullet_frame1_texture
-pistol_bullet_frame2_texture
+robot_idle1
 frames_till_next = 5;
 running_left:
-pistol_bullet_frame1_texture
-pistol_bullet_frame2_texture
+robot_idle1
 frames_till_next = 5

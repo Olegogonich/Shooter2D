@@ -52,7 +52,6 @@ sf::Texture* Level::loadTexture(const std::string& name, const std::string& path
         std::cout << "file not found" << '\n';
         return nullptr;
     }
-    texture->setSmooth(true);
     (*textures)[name] = texture;
 
     return texture;
@@ -135,7 +134,7 @@ void Level::checkBullets() const {
                 continue;
 
             if (Level::collide(bullet, object)) {
-                createVfx(*(*bullet->animator->animations)["flying"], bullet->position, {bullet->size.x * antizoom * 5, bullet->size.y * antizoom * 5}, bullet->angle, false, false);
+                createVfx(*(*bullet->animator->animations)["boom"], bullet->position, {bullet->size.x * antizoom * 5, bullet->size.y * antizoom * 5}, bullet->angle, false, false);
                 deleteBullet(bullet);
                 return;
             }
@@ -145,8 +144,12 @@ void Level::checkBullets() const {
 
 Weapon Level::getPistol() const {
     Weapon weapon (Pistol::power, Pistol::bullet_mass, Pistol::damage, Pistol::reload, Pistol::rate, Pistol::stability, Pistol::recoil, Pistol::max_recoil, Pistol::bullet_size, Pistol::capacity, Animator(), Animator());
-    weapon.weaponAnimator->createAnimation("idle", {(*textures)["pistol_texture"]}, 10);
-    weapon.bulletAnimator.createAnimation("flying", {(*textures)["pistol_bullet_frame1_texture"], (*textures)["pistol_bullet_frame2_texture"]}, 1);
+    weapon.weaponAnimator->createAnimation("idle", {(*textures)["weapon_idle"]}, 10);
+    weapon.weaponAnimator->createAnimation("idle_bottom", {(*textures)["weapon_idle"]}, 10);
+    weapon.weaponAnimator->createAnimation("firing", {(*textures)["weapon_firing1"], (*textures)["weapon_firing2"]}, 1);
+    weapon.weaponAnimator->createAnimation("firing_bottom", {(*textures)["weapon_firing1"], (*textures)["weapon_firing2"]}, 1);
+    weapon.bulletAnimator.createAnimation("flying", {(*textures)["bullet"]}, 1);
+    weapon.bulletAnimator.createAnimation("boom", {(*textures)["spark1"], (*textures)["spark2"], (*textures)["spark3"]}, 1);
     return weapon;
 }
 

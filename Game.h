@@ -4,6 +4,8 @@
 #include <fstream>
 #include "Level.h"
 
+#define CONTENT_ROOT "/Users/oleh/CLionProjects/Shooter2D/"
+
 class Game {
 
 public:
@@ -32,8 +34,6 @@ private:
     static void createEntityDefaultAnimations(Level*, Entity*, const std::string& path);
 
     static void createLevelPlayer(Level *level, std::ifstream *fin);
-
-    void createLevelEnemies(Level*, std::ifstream*);
 
     static void createLevelEnemy(Level*, std::ifstream*);
 
