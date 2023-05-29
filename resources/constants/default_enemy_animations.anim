@@ -1,0 +1,15 @@
+animations:
+dead:
+pistol_texture
+frames_till_next = 5
+idle:
+player_texture
+frames_till_next = 5
+running_right:
+pistol_bullet_frame1_texture
+pistol_bullet_frame2_texture
+frames_till_next = 5;
+running_left:
+pistol_bullet_frame1_texture
+pistol_bullet_frame2_texture
+frames_till_next = 5

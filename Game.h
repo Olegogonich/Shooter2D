@@ -11,29 +11,39 @@ public:
 
     void stop();
 
+    Game();
+
+    ~Game();
+
 private:
     sf::RenderWindow* window;
     std::vector<Level*>* levels;
 
-    uint currentLevelIndex;
+    int currentLevelIndex;
 
-    explicit Game(sf::RenderWindow*);
-
-    void startLevel(Level*);
+    static void startLevel(Level*);
 
     Level* loadLevel(const std::string& path);
 
-    void loadLevelTextures(Level*, std::ifstream*);
+    static void loadLevelTextures(Level*, std::ifstream*);
 
-    void loadLevelFonts(Level*, std::ifstream*);
+    static void loadLevelFonts(Level*, std::ifstream*);
 
-    void createLevelPlayers(Level*, std::ifstream*);
+    static void createEntityDefaultAnimations(Level*, Entity*, const std::string& path);
+
+    static void createLevelPlayer(Level *level, std::ifstream *fin);
 
     void createLevelEnemies(Level*, std::ifstream*);
 
-    void createLevelStaics(Level*, std::ifstream*);
+    static void createLevelEnemy(Level*, std::ifstream*);
 
-    void createLevelDynamics(Level*, std::ifstream*);
+    static void createLevelStatic(Level *level, std::ifstream *fin);
 
-    ~Game();
+    static void createLevelDynamic(Level*, std::ifstream*);
+
+    static void createLevelObject(const b2BodyType&, Level*, std::ifstream*);
+
+    static Controls getDefaultControls();
+
+    static void createObjectDefaultAnimations(Level *, PhysicalObject *, const std::string &);
 };

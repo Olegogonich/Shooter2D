@@ -1,0 +1,4 @@
+animations:
+idle:
+player_texture
+frames_till_next = 5

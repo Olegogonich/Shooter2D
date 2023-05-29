@@ -24,11 +24,10 @@ PhysicalObject::PhysicalObject(b2World& world, const b2BodyType& type, sf::Vecto
     body = world.CreateBody(&bodyDef);
     body->CreateFixture(&boxFixtureDef);
 
-    shape->setFillColor(sf::Color::Black);
+    shape->setFillColor(sf::Color::Transparent);
     shape->setSize({size.x * 2.f * zoom, size.y * 2.f * zoom});
     shape->setOrigin(shape->getSize().x * 0.5f, shape->getSize().y * 0.5f);
     shape->setPosition(shape->getPosition().x * zoom, shape->getPosition().y * zoom);
-
 }
 
 PhysicalObject::PhysicalObject(b2World &world, const b2BodyType& type, sf::Vector2f pos, const sf::Vector2f size, sf::Texture* _texture) :

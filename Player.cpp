@@ -26,11 +26,11 @@ void Player::control() {
 
     if (movedRight) {
         moveRight();
-        animator->currentAnimation = "running";
+        animator->currentAnimation = "running_right";
     }
     if (movedLeft) {
         moveLeft();
-        animator->currentAnimation = "running";
+        animator->currentAnimation = "running_left";
     }
 
     if (!movedRight && !movedLeft)

@@ -2,12 +2,14 @@
 
 Animator::Animator() :
     animations(new std::map<std::string, Animation*>()),
-    sprite(new sf::Sprite()) { }
+    sprite(new sf::Sprite()),
+    fixedSize(true) { }
 
 Animator::Animator(const Animator& temp) :
     animations(new std::map<std::string, Animation*>()),
     sprite(new sf::Sprite(*temp.sprite)),
-    currentAnimation(temp.currentAnimation) {
+    currentAnimation(temp.currentAnimation),
+    fixedSize(true) {
 
     for (const auto& animation : *temp.animations) {
         (*animations)[animation.first] = new Animation(*animation.second);
@@ -37,8 +39,10 @@ void Animator::update(const sf::Vector2f& pos, const sf::Vector2f& size, const f
 
 void Animator::updateSprite(const sf::Vector2f& pos, const sf::Vector2f& size, const float& rotation) const {
     sf::Vector2u textureSize = getCurrentTexture()->getSize();
-    sf::Vector2f scaling = {size.x / (float)textureSize.x, size.y / (float)textureSize.y};
-    sprite->setScale(scaling);
+    if (fixedSize) {
+        sf::Vector2f scaling = {size.x / (float) textureSize.x, size.y / (float) textureSize.y};
+        sprite->setScale(scaling);
+    }
     sprite->setOrigin((float)textureSize.x * 0.5f, (float)textureSize.y * 0.5f);
     sprite->setPosition({pos.x * zoom, pos.y * zoom});
     sprite->setRotation(rotation * RADTODEG);
@@ -54,7 +58,7 @@ sf::Texture* Animator::getCurrentTexture() const {
 
 Animation* Animator::getCurrentAnimation() const {
     if (!animations->count(currentAnimation)) {
-        std::string exceptionText = "No animation named \"" + currentAnimation + "\"";
+        std::string exceptionText = "No animation named " + currentAnimation;
         throw (AnimatorException(exceptionText));
     }
 
@@ -78,4 +82,8 @@ Animator::~Animator() {
     }
     delete animations;
     delete sprite;
+}
+
+void Animator::setFixedSize(bool flag) {
+    fixedSize = flag;
 }

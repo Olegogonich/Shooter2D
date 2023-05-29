@@ -11,6 +11,7 @@ struct Animator {
     std::map<std::string, Animation*>* animations;
     sf::Sprite* sprite;
     std::string currentAnimation;
+    bool fixedSize;
 
     Animator();
 
@@ -27,6 +28,8 @@ struct Animator {
     sf::Texture* getCurrentTexture() const;
 
     Animation* getCurrentAnimation() const;
+
+    void setFixedSize(bool);
 
     void createAnimation(const std::string &name, const std::vector<sf::Texture*>& textures, uint framesTillNext);
 

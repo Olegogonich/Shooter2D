@@ -20,14 +20,16 @@ const uint player_max_health = 10;
 const uint enemy_max_health = 10;
 const bool dynamic_bullets = true;
 
+const std::string first_level_path = "/Users/oleh/CLionProjects/Shooter2D/resources/levels/first.lvl";
+
 const std::map<std::string, std::string> default_fonts {
-        std::pair<std::string, std::string>("default_font",                 "resources/fonts/square-deal.ttf")
+        std::pair<std::string, std::string>("default_font",                 "/Users/oleh/CLionProjects/Shooter2D/resources/fonts/square-deal.ttf")
 };
 const std::map<std::string, std::string> default_textures {
-        std::pair<std::string, std::string>("pistol_texture",               "resources/images/pic.jpg"),
-        std::pair<std::string, std::string>("pistol_bullet_frame1_texture", "resources/images/man0.png"),
-        std::pair<std::string, std::string>("pistol_bullet_frame2_texture", "resources/images/man1.png"),
-        std::pair<std::string, std::string>("player_texture",               "resources/images/pic.jpg"),
+        std::pair<std::string, std::string>("pistol_texture",               "/Users/oleh/CLionProjects/Shooter2D/resources/images/pic.jpg"),
+        std::pair<std::string, std::string>("pistol_bullet_frame1_texture", "/Users/oleh/CLionProjects/Shooter2D/resources/images/man0.png"),
+        std::pair<std::string, std::string>("pistol_bullet_frame2_texture", "/Users/oleh/CLionProjects/Shooter2D/resources/images/man1.png"),
+        std::pair<std::string, std::string>("player_texture",               "/Users/oleh/CLionProjects/Shooter2D/resources/images/pic.jpg"),
 };
 
 const b2BodyType bullet_body_type = dynamic_bullets ? b2_dynamicBody : b2_kinematicBody;

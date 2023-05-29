@@ -137,7 +137,7 @@ void Level::checkBullets() const {
             if (Level::collide(bullet, object)) {
                 createVfx(*(*bullet->animator->animations)["flying"], bullet->position, {bullet->size.x * antizoom * 5, bullet->size.y * antizoom * 5}, bullet->angle, false, false);
                 deleteBullet(bullet);
-                break;
+                return;
             }
         }
     }
@@ -183,7 +183,6 @@ Level::~Level() {
     delete fonts;
     delete view;
     delete world;
-    delete window;
 }
 
 bool Level::collide(PhysicalObject* obj1, PhysicalObject* obj2) {

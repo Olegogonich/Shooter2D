@@ -52,6 +52,8 @@ void Enemy::resetTarget() {
 }
 
 void Enemy::chase() {
+    animator->currentAnimation = "idle";
+
     if (target == nullptr)
         return;
 
@@ -68,7 +70,13 @@ void Enemy::chase() {
         return;
 
     if (abs(body->GetPosition().x - pos1.x) < abs(body->GetPosition().x - pos2.x))
-        pos1.x > 0 ? moveRight() : moveLeft();
+        if(pos1.x > 0) {
+            moveRight();
+            animator->currentAnimation = "running_right";
+        } else {
+            moveLeft();
+            animator->currentAnimation = "running_left";
+        }
     else
         pos2.x > 0 ? moveRight() : moveLeft();
 }

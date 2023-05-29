@@ -1,11 +1,28 @@
 textures:
+pistol_texture = /Users/oleh/CLionProjects/Shooter2D/resources/images/pic.jpg
+pistol_bullet_frame1_texture = /Users/oleh/CLionProjects/Shooter2D/resources/images/man0.png
+pistol_bullet_frame2_texture = /Users/oleh/CLionProjects/Shooter2D/resources/images/man1.png
+player_texture = /Users/oleh/CLionProjects/Shooter2D/resources/images/pic.jpg
 
 fonts:
+default_font = /Users/oleh/CLionProjects/Shooter2D/resources/fonts/square-deal.ttf
 
 player:
+pos: 0, 0
+size: 1, 2
+animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_player_animations.anim
 
-enemies:
-
-static:
+enemy:
+pos: 0, 0
+size: 1, 2
+animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_enemy_animations.anim
 
 dynamic:
+pos: -10, 0
+size: 2, 2
+animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_block_animations.anim
+
+static:
+pos: 0, 20
+size: 100, 2
+texture: pistol_texture
