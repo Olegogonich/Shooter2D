@@ -1,6 +1,7 @@
 #include "Game.h"
 
-Game::Game() : levels(new std::vector<Level*>()), window(nullptr), currentLevelIndex(0) { }
+Game::Game() : levels(std::vector<std::string>()), window(nullptr), currentLevelIndex(0) { }
+
 void Game::start() {
     const sf::Vector2u screen_size {1600, 1000};
 
@@ -9,35 +10,61 @@ void Game::start() {
     window->setVerticalSyncEnabled(true);
     window->setFramerateLimit(60);
 
-    loadLevel(first_level_path);
+    levels.push_back(first_level_path);
 
     sf::Text text;
+    sf::Font font;
+
+    if (!font.loadFromFile(default_fonts.at("default_font"))) {
+        std::cout << "file not found" << '\n';
+    }
+    text.setFont(font);
+
+    bool pressed = false;
 
     while (window->isOpen()) {
         sf::Event event{};
         while (window->pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
+                stop();
                 return;
             }
         }
         window->clear(sf::Color::White);
+        window->setView(window->getDefaultView());
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-            currentLevelIndex++;
+        bool rightPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
+        bool leftPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Left);
+        bool enterPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Enter);
 
-        currentLevelIndex %= 3;
+        if (!pressed) {
+            if (rightPressed) {
+                currentLevelIndex++;
+                pressed = true;
+            } else if (leftPressed) {
+                currentLevelIndex--;
+                pressed = true;
+            } else if (enterPressed) {
+                Level* level = loadLevel(levels[currentLevelIndex]);
+                startLevel(level);
+                pressed = true;
+            }
+        } else if (!rightPressed && !leftPressed && ! enterPressed) {
+            pressed = false;
+        }
 
-        text.setString(std::to_string(10));
-        text.setCharacterSize(10);
-        sf::Color color = 1 ? sf::Color::Black : sf::Color::Red;
-        text.setFillColor(color);
-        text.setPosition({0, 0});
-        window->draw(text);
+        currentLevelIndex %= levels.size();
+
+        for (int i = 0; i < levels.size(); i++) {
+            text.setString(std::to_string(i + 1));
+            text.setCharacterSize(100);
+            sf::Color color = (i == currentLevelIndex) ? sf::Color::Red : sf::Color::Black;
+            text.setFillColor(color);
+            text.setPosition({100.f + i * 110, 100});
+            window->draw(text);
+        }
 
         window->display();
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-            startLevel(levels->at(currentLevelIndex));
     }
 }
 
@@ -73,7 +100,6 @@ Level* Game::loadLevel(const std::string &path) {
         createLevelStatic(level, fin);
         getline(*fin, buffer);
     }
-    levels->push_back(level);
     delete fin;
     return level;
 }
@@ -239,8 +265,5 @@ void Game::createLevelObject(const b2BodyType& type, Level *level, std::ifstream
 }
 
 Game::~Game() {
-    for (Level* level : *levels) {
-        delete level;
-    }
     delete window;
 }

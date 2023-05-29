@@ -29,7 +29,5 @@ int main() {
     auto game = new Game();
     game->start();
 
-    game->stop();
-
     return 0;
 }

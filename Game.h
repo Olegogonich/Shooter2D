@@ -17,7 +17,7 @@ public:
 
 private:
     sf::RenderWindow* window;
-    std::vector<Level*>* levels;
+    std::vector<std::string> levels;
 
     int currentLevelIndex;
 
