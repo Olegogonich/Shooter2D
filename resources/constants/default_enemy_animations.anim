@@ -1,18 +1,21 @@
 animations:
 dead:
-robot_idle1
+enemy_death1
+enemy_death2
+enemy_death3
+enemy_death4
+enemy_death5
+enemy_death6
+enemy_death7
+enemy_death8
 frames_till_next = 5
 idle:
-robot_idle1
-robot_idle2
-robot_idle3
-robot_idle4
-robot_idle5
-robot_idle6
+enemy_idle1
+enemy_idle2
 frames_till_next = 10
 running_right:
-robot_idle1
+enemy_idle1
 frames_till_next = 5;
 running_left:
-robot_idle1
+enemy_idle1
 frames_till_next = 5

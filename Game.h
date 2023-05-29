@@ -43,6 +43,8 @@ private:
 
     static void createLevelObject(const b2BodyType&, Level*, std::ifstream*);
 
+    static void setLevelWinningPos(Level*, const std::string&);
+
     static Controls getDefaultControls();
 
     static void createObjectDefaultAnimations(Level *, PhysicalObject *, const std::string &);

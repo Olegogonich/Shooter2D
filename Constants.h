@@ -15,12 +15,17 @@ const sf::Vector2u playerAmmoPos {20, 150};
 const uint playerInfoSize = 100;
 
 const uint quiting_time = 60;
-const uint bullet_lifetime = 10;
+const uint bullet_lifetime = 15;
 const uint player_max_health = 10;
 const uint enemy_max_health = 10;
 const bool dynamic_bullets = true;
 
 const std::string first_level_path = "/Users/oleh/CLionProjects/Shooter2D/resources/levels/first.lvl";
+const std::string second_level_path = "/Users/oleh/CLionProjects/Shooter2D/resources/levels/second.lvl";
+const std::string third_level_path = "/Users/oleh/CLionProjects/Shooter2D/resources/levels/third.lvl";
+const std::string fourth_level_path = "/Users/oleh/CLionProjects/Shooter2D/resources/levels/fourth.lvl";
+const std::string fifth_level_path = "/Users/oleh/CLionProjects/Shooter2D/resources/levels/fifth.lvl";
+
 
 const std::map<std::string, std::string> default_fonts {
         std::pair<std::string, std::string>("default_font",                 "/Users/oleh/CLionProjects/Shooter2D/resources/fonts/square-deal.ttf")

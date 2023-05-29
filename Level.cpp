@@ -82,6 +82,7 @@ void Level::checkShooting() const {
         );
 
         bullet->setOwner(entity);
+        bullet->animator->setFixedSize(false);
 
         b2Vec2 pos = bullet->body->GetPosition();
         pos.x += cos(bullet->angle) * 0.01;
@@ -120,6 +121,7 @@ void Level::checkBullets() const {
             if (Level::collide(bullet, entity)) {
                 if (entity != bullet->owner)
                     entity->dealDamage(bullet->damage);
+                createVfx(*(*bullet->animator->animations)["boom"], bullet->position, {bullet->size.x * antizoom * 5, bullet->size.y * antizoom * 5}, bullet->angle, false, false);
                 shouldBeDeleted = true;
                 continue;
             }
@@ -196,7 +198,7 @@ bool Level::collide(PhysicalObject* obj1, PhysicalObject* obj2) {
     sf::Vector2f pos2 = obj2->position;
     sf::Vector2f size2 = obj2->size;
 
-    float inaccuracy = 0.2;
+    float inaccuracy = 0.15;
 
     return abs(pos1.x - pos2.x) - inaccuracy <= (size1.x + size2.x) && abs(pos1.y - pos2.y) - inaccuracy <= (size1.y + size2.y);
 }
@@ -235,6 +237,11 @@ void Level::loadDefaultFonts() const {
 void Level::start() {
     uint quiting = 0;
     uint quitingTextAlpha;
+
+    Animator winningAnimation;
+    winningAnimation.createAnimation("winning", {(*textures)["winning"]}, 10);
+    createVfx(*winningAnimation.animations->at("winning"), winningPos, {2, 2}, 0, true, true);
+
     while (window->isOpen())
     {
         sf::Event event{};
@@ -245,18 +252,22 @@ void Level::start() {
                 return;
             }
         }
-        window->clear(sf::Color::White);
+        window->clear(sf::Color(100, 100, 150));
 
         displayObjects();
         displayEffects();
         displayEntities();
 
         if (currentPlayer == nullptr) {
-            gameover();
+            if (winning)
+                win();
+            else
+                gameover();
         } else {
             aimCurrentPlayer();
             displayPlayerInfo();
         }
+        checkWin();
 
         quitingTextAlpha = 255.f / quiting_time * quiting;
         displayText("quiting...", {10, (uint)view->getSize().y - 35}, 50, sf::Color(220, 220, 220, quitingTextAlpha), sf::Color(0, 0, 0, quitingTextAlpha), 1);
@@ -280,10 +291,18 @@ void Level::start() {
 
 void Level::gameover() const {
     uint size = 225;
-    sf::Vector2u pos = {0, 0};
-    sf::Color color(70, 70, 70);
-    sf::Color outline(80, 80, 80);
-    displayText("Game Over", pos, size, color, outline, 5);
+    sf::Vector2u pos = {50, 50};
+    sf::Color color(170, 70, 70);
+    sf::Color outline(180, 80, 80);
+    displayText("Game Over", pos, size, color, outline, 1);
+}
+
+void Level::win() {
+    uint size = 225;
+    sf::Vector2u pos = {50, 50};
+    sf::Color color(70, 170, 70);
+    sf::Color outline(80, 180, 80);
+    displayText("You Win", pos, size, color, outline, 1);
 }
 
 void Level::stop() {
@@ -495,4 +514,16 @@ void Level::tellEnemiesPlayerPositions() const {
 
 void Level::aimCurrentPlayer() {
     currentPlayer->aimingAngle = getMouseToEntityAngle(currentPlayer) - 360 * DEGTORAD;
+}
+
+void Level::checkWin() {
+    if (currentPlayer == nullptr)
+        return;
+
+    if (abs(currentPlayer->position.x - winningPos.x) < 0.8 && abs(currentPlayer->position.y - winningPos.y) < 0.8) {
+        createVfx(*(*currentPlayer->animator->animations)["idle"], currentPlayer->position, {currentPlayer->size.x * antizoom, currentPlayer->size.y * antizoom}, 0, true, false);
+        deletePlayer(currentPlayer);
+        currentPlayer = nullptr;
+        winning = true;
+    }
 }

@@ -1,6 +1,16 @@
 animations:
 dead:
-robot_idle1
+robot_death1
+robot_death2
+robot_death3
+robot_death4
+robot_death5
+robot_death6
+robot_death7
+robot_death8
+robot_death9
+robot_death10
+robot_death11
 frames_till_next = 5
 idle:
 robot_idle1

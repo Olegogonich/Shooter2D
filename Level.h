@@ -16,6 +16,8 @@ struct Level {
     const float h = 0.45;
     const float r = 0.1;
     const float camera_offset_y = -200;
+    sf::Vector2f winningPos;
+    bool winning = false;
 
     sf::View* view;
     std::map<std::string, sf::Font*>* fonts;
@@ -66,6 +68,8 @@ struct Level {
 
     void gameover() const;
 
+    void win();
+
     sf::Font* loadFont(const std::string&, const std::string&) const;
 
     sf::Texture* loadTexture(const std::string&, const std::string&) const;
@@ -75,6 +79,8 @@ struct Level {
 private:
 
     static bool collide(PhysicalObject*, PhysicalObject*);
+
+    void checkWin();
 
     void displayObjects() const;
 

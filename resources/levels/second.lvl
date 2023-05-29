@@ -40,33 +40,53 @@ fonts:
 default_font = resources/fonts/square-deal.ttf
 
 player:
-pos: -15, 0
+pos: -20, 0
 size: 1, 2
 animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_player_animations.anim
 
 enemy:
-pos: 0, 0
+pos: 10, 0
 size: 1, 2
 animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_enemy_animations.anim
 
 enemy:
-pos: 0, 0
+pos: 15, 10
 size: 1, 2
 animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_enemy_animations.anim
 
-dynamic:
-pos: -10, 0
-size: 2, 2
-animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_block_animations.anim
-
-dynamic:
-pos: 15, 0
-size: 2, 2
-animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_block_animations.anim
+enemy:
+pos: 25, 10
+size: 1, 2
+animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_enemy_animations.anim
 
 static:
 pos: 0, 20
 size: 100, 2
+texture: plain
+
+static:
+pos: 10, 10
+size: 10, 1
+texture: plain
+
+static:
+pos: 1, 9.5
+size: 0.5, 1.5
+texture: plain
+
+static:
+pos: -2, 13.5
+size: 1, 0.5
+texture: plain
+
+static:
+pos: -5, 15.5
+size: 1, 0.5
+texture: plain
+
+static:
+pos: 20, 12
+size: 1, 5
 texture: plain
 
 winning_pos: 10, 4

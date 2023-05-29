@@ -11,6 +11,7 @@ void Game::start() {
     window->setFramerateLimit(60);
 
     levels.push_back(first_level_path);
+    levels.push_back(second_level_path);
 
     sf::Text text;
     sf::Font font;
@@ -30,7 +31,7 @@ void Game::start() {
                 return;
             }
         }
-        window->clear(sf::Color::White);
+        window->clear(sf::Color(100, 100, 150));
         window->setView(window->getDefaultView());
 
         bool rightPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::Right);
@@ -60,9 +61,16 @@ void Game::start() {
             text.setCharacterSize(100);
             sf::Color color = (i == currentLevelIndex) ? sf::Color::Red : sf::Color::Black;
             text.setFillColor(color);
-            text.setPosition({100.f + i * 110, 100});
+            text.setPosition({100.f + i * 110, 210});
             window->draw(text);
         }
+
+        text.setString("Choose level");
+        text.setCharacterSize(100);
+        sf::Color color = sf::Color::Black;
+        text.setFillColor(color);
+        text.setPosition({100, 100});
+        window->draw(text);
 
         window->display();
     }
@@ -72,33 +80,31 @@ Level* Game::loadLevel(const std::string &path) {
     auto* level = new Level(gravity, window);
     auto* fin = new std::ifstream(path);
     std::string buffer;
-    std::cout << "\nloading textures..." << '\n';
     loadLevelTextures(level, fin);
-    std::cout << "\nloading fonts..." << '\n';
     loadLevelFonts(level, fin);
-    std::cout << "\nloading players..." << '\n';
     getline(*fin, buffer);
     while (buffer == "player:") {
         createLevelPlayer(level, fin);
         getline(*fin, buffer);
+        getline(*fin, buffer);
     }
-    std::cout << "\nloading enemies..." << '\n';
-    getline(*fin, buffer);
     while (buffer == "enemy:") {
         createLevelEnemy(level, fin);
         getline(*fin, buffer);
+        getline(*fin, buffer);
     }
-    std::cout << "\nloading dynamic..." << '\n';
-    getline(*fin, buffer);
     while (buffer == "dynamic:") {
         createLevelDynamic(level, fin);
         getline(*fin, buffer);
+        getline(*fin, buffer);
     }
-    std::cout << "\nloading static..." << '\n';
-    getline(*fin, buffer);
     while (buffer == "static:") {
         createLevelStatic(level, fin);
         getline(*fin, buffer);
+        getline(*fin, buffer);
+    }
+    if (buffer.find("winning_pos:") != std::string::npos) {
+        setLevelWinningPos(level, buffer);
     }
     delete fin;
     return level;
@@ -106,11 +112,6 @@ Level* Game::loadLevel(const std::string &path) {
 
 
 void Game::startLevel(Level *level) {
-
-    for (const auto& t : *level->textures) {
-        std::cout << t.first << '\n';
-    }
-
     level->start();
 }
 
@@ -127,7 +128,7 @@ void Game::loadLevelTextures(Level *level, std::ifstream* fin) {
             continue;
         std::string name = buffer.substr(0, buffer.find(" = "));
         std::string path = buffer.substr(buffer.find(" = ") + 3);
-        level->loadTexture(name, path);
+        level->loadTexture(name, CONTENT_ROOT + path);
     }
 }
 
@@ -138,7 +139,7 @@ void Game::loadLevelFonts(Level *level, std::ifstream* fin) {
     while (!buffer.empty()) {
         std::string name = buffer.substr(0, buffer.find(" = "));
         std::string path = buffer.substr(buffer.find(" = ") + 3);
-        level->loadFont(name, path);
+        level->loadFont(name, CONTENT_ROOT + path);
         std::getline(*fin, buffer);
     }
 }
@@ -265,6 +266,13 @@ void Game::createLevelObject(const b2BodyType& type, Level *level, std::ifstream
         std::string texture_name = buffer.substr(9);
         level->createObject(type, pos, size, Animator::newStaticTexture((*level->textures)[texture_name]));
     }
+}
+
+void Game::setLevelWinningPos(Level* level, const std::string& buffer) {
+    sf::Vector2f pos;
+    pos.x = stof(buffer.substr(13, buffer.find(", ") - 13));
+    pos.y = stof(buffer.substr(buffer.find(", ") + 2));
+    level->winningPos = pos;
 }
 
 Game::~Game() {

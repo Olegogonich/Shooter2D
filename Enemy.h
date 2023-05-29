@@ -15,7 +15,8 @@ struct Enemy : Entity {
 
     float aiming_speed = 0.1;
     float attack_radius = 35;
-    float chasing_range = 15;
+    float range = 5;
+    float chasing_range = 12.5;
     float min_angle_for_shooting = 0.5;
     bool direction = RIGHT;
 

@@ -1,9 +1,13 @@
 #include "Enemy.h"
+#include <random>
+#include <ctime>
 
 Enemy::Enemy(b2World& world ,const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& _animator)
     : Entity(world, pos, size, _animator, enemy_max_health, JUMP_FORCE, TOP_SPEED, ACCELERATION, FRICTION) {
     target = nullptr;
     aimingAngle = 0;
+    std::srand(std::time(nullptr));
+    chasing_range += std::rand() % (int)range;
 }
 
 void Enemy::update() {
@@ -22,7 +26,6 @@ void Enemy::aim() {
     if (target == nullptr) {
         aimPos = body->GetPosition();
         aimPos.x += direction == RIGHT ? 10 : -10;
-        std::cout << direction << '\r';
     } else {
         aimPos = target->body->GetPosition();
     }
