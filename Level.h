@@ -94,10 +94,6 @@ private:
 
     void displayText(sf::Text, const sf::Vector2u& pos) const;
 
-    void loadDefaultFonts() const;
-
-    void loadDefaultTextures() const;
-
     void movePlayerCamera() const;
 
     void displayEntityInfo(Entity*) const;

@@ -11,10 +11,7 @@ Level::Level(const b2Vec2& gravity, sf::RenderWindow *window) :
     bullets(new std::vector<Bullet*>()),
     view(new sf::View(window->getDefaultView())),
     world(new b2World(gravity)),
-    window(window) {
-    loadDefaultTextures();
-    loadDefaultFonts();
-}
+    window(window) { }
 
 PhysicalObject* Level::createObject(const b2BodyType& type, const sf::Vector2f& pos, const sf::Vector2f& size, const Animator& animator) const {
     auto* object = new PhysicalObject(*this->world, type, pos, size, animator);
@@ -155,13 +152,6 @@ Weapon Level::getPistol() const {
     return weapon;
 }
 
-void Level::loadDefaultTextures() const {
-    for (const auto& name_path : default_textures) {
-        sf::Texture* texture = loadTexture(name_path.first, name_path.second);
-        (*textures)[name_path.first] = texture;
-    }
-}
-
 Level::~Level() {
     for (PhysicalObject* object : *objects) {
         delete object;
@@ -227,12 +217,6 @@ sf::Font *Level::loadFont(const std::string& name, const std::string& path) cons
     return font;
 }
 
-void Level::loadDefaultFonts() const {
-    for (const auto& name_path : default_fonts) {
-        sf::Font* font = loadFont(name_path.first, name_path.second);
-        (*fonts)[name_path.first] = font;
-    }
-}
 
 void Level::start() {
     uint quiting = 0;
