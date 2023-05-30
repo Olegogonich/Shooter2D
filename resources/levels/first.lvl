@@ -88,8 +88,13 @@ size: 2, 2
 animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_block_animations.anim
 
 static:
-pos: 0, 20
-size: 100, 2
+pos: 0, 30
+size: 100, 10
 texture: plain
 
-winning_pos: 10, 4
+static:
+pos: -40, 10
+size: 2, 10
+texture: plain
+
+winning_pos: 10, 4.5

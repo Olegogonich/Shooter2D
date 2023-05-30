@@ -73,38 +73,23 @@ size: 1, 2
 animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_enemy_animations.anim
 
 enemy:
-pos: 15, 10
+pos: 55, 5
 size: 1, 2
 animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_enemy_animations.anim
 
 enemy:
-pos: 25, 10
+pos: 65, 5
+size: 1, 2
+animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_enemy_animations.anim
+
+enemy:
+pos: 70, -5
 size: 1, 2
 animations: /Users/oleh/CLionProjects/Shooter2D/resources/constants/default_enemy_animations.anim
 
 static:
-pos: 0, 28
+pos: 50, 28
 size: 100, 10
-texture: plain
-
-static:
-pos: 10, 10
-size: 10, 1
-texture: plain
-
-static:
-pos: 1, 9.5
-size: 0.5, 1.5
-texture: plain
-
-static:
-pos: -2, 13.5
-size: 1, 0.5
-texture: plain
-
-static:
-pos: -5, 15.5
-size: 1, 0.5
 texture: plain
 
 static:
@@ -113,8 +98,33 @@ size: 2, 10
 texture: plain
 
 static:
-pos: 20, 12
-size: 1, 5
+pos: 100, 0
+size: 2, 20
 texture: plain
 
-winning_pos: 10, 4
+static:
+pos: 20, 12
+size: 1, 2
+texture: plain
+
+static:
+pos: 40, 15
+size: 5, 1
+texture: plain
+
+static:
+pos: 55, 10
+size: 5, 1
+texture: plain
+
+static:
+pos: 40, 5
+size: 5, 1
+texture: plain
+
+static:
+pos: 70, 0
+size: 20, 1
+texture: plain
+
+winning_pos: 21, -0.75

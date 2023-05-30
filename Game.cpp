@@ -10,13 +10,14 @@ void Game::start() {
     window->setVerticalSyncEnabled(true);
     window->setFramerateLimit(60);
 
-    levels.push_back(first_level_path);
-    levels.push_back(second_level_path);
+    levels.push_back(CONTENT_ROOT + first_level_path);
+    levels.push_back(CONTENT_ROOT + second_level_path);
+    levels.push_back(CONTENT_ROOT + third_level_path);
 
     sf::Text text;
     sf::Font font;
 
-    if (!font.loadFromFile(default_fonts.at("default_font"))) {
+    if (!font.loadFromFile( CONTENT_ROOT+ default_fonts.at("default_font"))) {
         std::cout << "file not found" << '\n';
     }
     text.setFont(font);
