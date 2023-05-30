@@ -14,8 +14,16 @@ enemy_idle1
 enemy_idle2
 frames_till_next = 10
 running_right:
-enemy_idle1
+enemy_running_right1
+enemy_running_right2
+enemy_running_right3
+enemy_running_right4
+enemy_running_right5
 frames_till_next = 5;
 running_left:
-enemy_idle1
+enemy_running_left1
+enemy_running_left2
+enemy_running_left3
+enemy_running_left4
+enemy_running_left5
 frames_till_next = 5

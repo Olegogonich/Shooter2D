@@ -21,8 +21,16 @@ robot_idle5
 robot_idle6
 frames_till_next = 10
 running_right:
-robot_idle1
+robot_running_right1
+robot_running_right2
+robot_running_right3
+robot_running_right4
+robot_running_right5
 frames_till_next = 5;
 running_left:
-robot_idle1
+robot_running_left1
+robot_running_left2
+robot_running_left3
+robot_running_left4
+robot_running_left5
 frames_till_next = 5
