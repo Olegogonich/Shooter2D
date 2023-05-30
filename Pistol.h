@@ -16,5 +16,5 @@ struct Pistol {
     constexpr static float recoil = 10;
     constexpr static float max_recoil = 50;
     constexpr static float bullet_size = 0.1;
-    constexpr static uint capacity = 20;
+    constexpr static uint capacity = 15;
 };
