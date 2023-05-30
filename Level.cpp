@@ -299,11 +299,11 @@ void Level::displayPlayerInfo() const {
 
     sf::Color health_color (255, 127, 127);
     sf::Color health_outline_color (200, 100, 100);
-    displayText(std::to_string(currentPlayer->health), playerHealthPos, playerInfoSize, health_color, health_outline_color, 3);
+    displayText("health " + std::to_string(currentPlayer->health), playerHealthPos, playerInfoSize, health_color, health_outline_color, 3);
 
     sf::Color ammo_color (250, 250, 10);
     sf::Color ammo_outline_color (205, 205, 100);
-    std::string ammoText = currentPlayer->reloading > 0 ? "reloading" : std::to_string(currentPlayer->weapon->ammo);
+    std::string ammoText = currentPlayer->reloading > 0 ? "reloading" : "ammo " + std::to_string(currentPlayer->weapon->ammo);
     displayText(ammoText, playerAmmoPos, playerInfoSize, ammo_color, ammo_outline_color, 3);
 }
 
